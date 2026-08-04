@@ -1,15 +1,30 @@
+import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+
+import { routeTree } from "@/routeTree.gen";
 import "@/styles/index.css";
+
+const router = createRouter({
+  routeTree,
+  defaultPreload: "intent",
+  // Everything is local; there is no network round trip to stagger a pending
+  // state around, so showing one would only add a flicker.
+  defaultPendingMs: 0,
+  scrollRestoration: true,
+});
+
+declare module "@tanstack/react-router" {
+  interface Register {
+    router: typeof router;
+  }
+}
 
 const rootEl = document.getElementById("root");
 if (!rootEl) throw new Error("#root element is missing from index.html");
 
 createRoot(rootEl).render(
   <StrictMode>
-    <main className="flex h-full flex-col items-center justify-center gap-4 p-6">
-      <h1 className="text-3xl font-semibold tracking-tight">Thing Tracker</h1>
-      <p className="text-muted-foreground text-sm">Toolchain smoke test.</p>
-    </main>
+    <RouterProvider router={router} />
   </StrictMode>,
 );

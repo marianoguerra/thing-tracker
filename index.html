@@ -14,6 +14,24 @@
       content="Local-first tracker for the things you do. Tap an emoji, it's logged."
     />
     <title>Thing Tracker</title>
+    <script>
+      // Applies the stored theme before first paint. Doing this from a React
+      // effect would flash the wrong theme on every cold start, which is most
+      // of the launches for an installed PWA.
+      (function () {
+        try {
+          var pref = localStorage.getItem("tt.theme.v1");
+          var dark =
+            pref === "dark" ||
+            (pref !== "light" && matchMedia("(prefers-color-scheme: dark)").matches);
+          document.documentElement.classList.toggle("dark", dark);
+          document.documentElement.style.colorScheme = dark ? "dark" : "light";
+          document
+            .querySelector('meta[name="theme-color"]')
+            .setAttribute("content", dark ? "#09090b" : "#ffffff");
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
