@@ -4,6 +4,7 @@ import { useDeferredValue, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { MeasurementSheet, type MeasurementPrompt } from "@/components/measure/MeasurementSheet";
+import { BackupReminder } from "@/components/pwa/BackupReminder";
 import { InstallHint } from "@/components/pwa/InstallHint";
 import { StorageBanner } from "@/components/pwa/StorageBanner";
 import type { Thing } from "@/db/schema";
@@ -155,6 +156,7 @@ export function TrackScreen({ onInspectThing, onEditEvent, onCreateThing }: Prop
         losing your data is worthless where nobody looks.
       */}
       <StorageBanner />
+      <BackupReminder />
       <InstallHint />
 
       {rows.length === 0 ? (

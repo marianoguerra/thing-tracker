@@ -6,8 +6,17 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useDb } from "@/db/provider";
+import {
+  INTERVAL_CHOICES,
+  NEVER,
+  daysSince,
+  recordBackup,
+  setBackupInterval,
+  useBackupState,
+} from "@/lib/backup-status";
 import { saveOrShare } from "@/lib/file";
 import { backupFilename, buildBackup } from "@/transfer/export";
+import { cn } from "@/lib/utils";
 
 type Props = {
   onImportText: (text: string, mode: "merge" | "replace") => void;
@@ -22,12 +31,16 @@ export function DataPanel({ onImportText }: Props) {
   const { data: things } = useLiveQuery((q) => q.from({ thing: collections.things }));
   const { data: events } = useLiveQuery((q) => q.from({ event: collections.events }));
   const { data: groups } = useLiveQuery((q) => q.from({ group: collections.groups }));
+  const backupState = useBackupState();
 
   async function exportBackup() {
     setBusy(true);
     try {
       const backup = await buildBackup(db, collections);
       await saveOrShare(JSON.stringify(backup, null, 2), backupFilename(backup.range));
+      // Recorded only after the file is actually produced, so a failed or
+      // cancelled export doesn't reset the reminder clock.
+      recordBackup(backup.range);
       if (backup.attachmentsOmitted) {
         // Never let a partial backup pass as a complete one.
         toast.warning("Media not included", {
@@ -69,6 +82,39 @@ export function DataPanel({ onImportText }: Props) {
         <Button className="w-full" onClick={() => void exportBackup()} disabled={busy}>
           <DownloadIcon /> Export everything
         </Button>
+
+        <p className="text-muted-foreground text-xs">
+          {backupState.lastAt === null
+            ? "No backup made yet."
+            : `Last backup ${describeAge(daysSince(backupState.lastAt))}${describeRange(backupState.lastRange)}.`}
+        </p>
+
+        <div className="space-y-1.5 pt-1">
+          <p className="text-muted-foreground text-xs">Remind me every</p>
+          <div className="flex flex-wrap gap-1.5">
+            {INTERVAL_CHOICES.map((days) => (
+              <IntervalChip
+                key={days}
+                active={backupState.intervalDays === days}
+                onClick={() => setBackupInterval(days)}
+              >
+                {days === 1
+                  ? "day"
+                  : days === 7
+                    ? "week"
+                    : days === 30
+                      ? "month"
+                      : `${String(days)}d`}
+              </IntervalChip>
+            ))}
+            <IntervalChip
+              active={backupState.intervalDays === NEVER}
+              onClick={() => setBackupInterval(NEVER)}
+            >
+              never
+            </IntervalChip>
+          </div>
+        </div>
       </section>
 
       <Separator />
@@ -119,6 +165,45 @@ export function DataPanel({ onImportText }: Props) {
         </Button>
       </section>
     </div>
+  );
+}
+
+function describeAge(days: number): string {
+  if (days === 0) return "today";
+  if (days === 1) return "yesterday";
+  return `${String(days)} days ago`;
+}
+
+function describeRange(range: { from: number | null; to: number | null } | undefined): string {
+  if (!range || range.from === null || range.to === null) return "";
+  const fmt = (ts: number) =>
+    new Date(ts).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+  return `, covering ${fmt(range.from)} – ${fmt(range.to)}`;
+}
+
+function IntervalChip({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={cn(
+        "rounded-full border px-3 py-1 text-xs font-medium",
+        active
+          ? "bg-primary text-primary-foreground border-transparent"
+          : "border-border text-muted-foreground",
+      )}
+    >
+      {children}
+    </button>
   );
 }
 
