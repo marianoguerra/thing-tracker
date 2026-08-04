@@ -65,7 +65,7 @@ export function GroupEditorDrawer({ state, onClose, onSave, onDelete }: Props) {
         </DrawerHeader>
 
         <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-4">
-          <div className="flex items-end gap-3">
+          <div className="flex items-start gap-3">
             <div className="space-y-1.5">
               <Label htmlFor="group-emoji">Emoji</Label>
               <button
@@ -86,6 +86,7 @@ export function GroupEditorDrawer({ state, onClose, onSave, onDelete }: Props) {
                 onChange={(event) => setTitle(event.target.value)}
                 placeholder="Morning routine"
                 autoComplete="off"
+                className="h-11"
               />
             </div>
           </div>

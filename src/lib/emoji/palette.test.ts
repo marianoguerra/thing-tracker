@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vite-plus/test";
 
+import { CATALOG, CATALOG_BY_CHAR } from "./catalog";
 import { EMOJI_CATEGORIES, EMOJI_PALETTE } from "./palette";
 import { searchEmoji } from "./search";
 
@@ -48,9 +49,42 @@ describe("emoji palette", () => {
   });
 });
 
+describe("catalog", () => {
+  it("is the full Unicode set, not just the curated one", () => {
+    expect(CATALOG.length).toBeGreaterThan(1500);
+  });
+
+  it("keeps every curated emoji reachable", () => {
+    // The merge is by character, and a few curated entries use a presentation
+    // variant the Unicode list keys without — losing them silently would undo
+    // the whole point of curating.
+    for (const entry of EMOJI_PALETTE) {
+      expect(CATALOG_BY_CHAR.has(entry.char), entry.name).toBe(true);
+    }
+  });
+
+  it("prefers the curated name and keeps its keywords", () => {
+    const meds = CATALOG_BY_CHAR.get("💊");
+    expect(meds?.name).toBe("Medication");
+    expect(meds?.common).toBe(true);
+    expect(meds?.keywords).toContain("meds");
+  });
+
+  it("carries no duplicate characters", () => {
+    const chars = CATALOG.map((e) => e.char);
+    expect(new Set(chars).size).toBe(chars.length);
+  });
+
+  it("covers the emoji that were missing from the curated set", () => {
+    for (const char of ["🚬", "🍼", "🎂", "🚀", "💡", "📦", "🍇", "🧦", "🌸", "⛺", "🛌"]) {
+      expect(CATALOG_BY_CHAR.has(char), char).toBe(true);
+    }
+  });
+});
+
 describe("searchEmoji", () => {
-  it("returns everything for an empty query", () => {
-    expect(searchEmoji("  ")).toHaveLength(EMOJI_PALETTE.length);
+  it("returns the whole catalog for an empty query", () => {
+    expect(searchEmoji("  ")).toHaveLength(CATALOG.length);
   });
 
   it("puts the obvious answer first", () => {

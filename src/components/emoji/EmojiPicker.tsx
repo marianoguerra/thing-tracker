@@ -2,12 +2,17 @@ import { useDeferredValue, useMemo, useState } from "react";
 
 import { Input } from "@/components/ui/input";
 import { useLocalStorageState } from "@/hooks/useLocalStorageState";
-import { EMOJI_CATEGORIES, type EmojiCategory } from "@/lib/emoji/palette";
+import { CATALOG_CATEGORIES, COMMON_CATEGORY, entriesForCategory } from "@/lib/emoji/catalog";
 import { searchEmoji } from "@/lib/emoji/search";
 import { cn } from "@/lib/utils";
 
 const RECENTS_KEY = "tt.emoji.recent.v1";
 const MAX_RECENTS = 16;
+/**
+ * Enough to scroll through without rendering ~1900 buttons for a one-letter
+ * query. Anything past this is reachable by typing one more character.
+ */
+const RENDER_LIMIT = 300;
 
 function parseRecents(raw: unknown): string[] | undefined {
   return Array.isArray(raw) && raw.every((v) => typeof v === "string") ? raw : undefined;
@@ -29,16 +34,15 @@ type Props = {
 
 export function EmojiPicker({ value, onSelect, className }: Props) {
   const [query, setQuery] = useState("");
-  const [category, setCategory] = useState<EmojiCategory | null>(null);
+  const [category, setCategory] = useState<string>(COMMON_CATEGORY);
   const deferredQuery = useDeferredValue(query);
   const { recents, remember } = useEmojiRecents();
 
   const results = useMemo(() => {
-    const matches = searchEmoji(deferredQuery);
     // A category filter alongside an active search would mostly produce empty
     // grids, so searching takes over and the chips step aside.
-    if (deferredQuery.trim() || !category) return matches;
-    return matches.filter((entry) => entry.category === category);
+    if (deferredQuery.trim()) return searchEmoji(deferredQuery);
+    return entriesForCategory(category);
   }, [deferredQuery, category]);
 
   function pick(char: string) {
@@ -71,10 +75,7 @@ export function EmojiPicker({ value, onSelect, className }: Props) {
 
       {!searching && (
         <div className="-mx-1 flex shrink-0 gap-1.5 overflow-x-auto px-1 pb-1">
-          <CategoryChip active={category === null} onClick={() => setCategory(null)}>
-            All
-          </CategoryChip>
-          {EMOJI_CATEGORIES.map((cat) => (
+          {CATALOG_CATEGORIES.map((cat) => (
             <CategoryChip key={cat} active={category === cat} onClick={() => setCategory(cat)}>
               {cat}
             </CategoryChip>
@@ -105,7 +106,7 @@ export function EmojiPicker({ value, onSelect, className }: Props) {
           </p>
         ) : (
           <div className="grid grid-cols-8 gap-1">
-            {results.map((entry) => (
+            {results.slice(0, RENDER_LIMIT).map((entry) => (
               <EmojiCell
                 key={entry.char}
                 char={entry.char}
@@ -116,6 +117,11 @@ export function EmojiPicker({ value, onSelect, className }: Props) {
             ))}
           </div>
         )}
+        {results.length > RENDER_LIMIT && (
+          <p className="text-muted-foreground py-3 text-center text-xs">
+            Showing {RENDER_LIMIT} of {results.length}. Keep typing to narrow it down.
+          </p>
+        )}
       </div>
 
       <div className="shrink-0 space-y-1.5">
@@ -123,8 +129,8 @@ export function EmojiPicker({ value, onSelect, className }: Props) {
           Or paste any emoji
         </label>
         {/*
-          The palette is curated, not exhaustive — this is the escape hatch for
-          anything it does not carry.
+          The catalog stops at Emoji 15 so nothing renders as tofu, and skips
+          skin-tone variants — this is the escape hatch for both.
         */}
         <Input
           id="emoji-custom"

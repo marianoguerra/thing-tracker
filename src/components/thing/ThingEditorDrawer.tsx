@@ -83,7 +83,12 @@ export function ThingEditorDrawer({ state, onClose, onSave, onDelete, siblingEmo
         </DrawerHeader>
 
         <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-4">
-          <div className="flex items-end gap-3">
+          {/*
+            `items-start` with matching control heights, not `items-end`:
+            aligning the bottoms of two columns whose controls differ in height
+            leaves the labels sitting at different heights.
+          */}
+          <div className="flex items-start gap-3">
             <div className="space-y-1.5">
               <Label htmlFor="thing-emoji">Emoji</Label>
               <button
@@ -105,6 +110,7 @@ export function ThingEditorDrawer({ state, onClose, onSave, onDelete, siblingEmo
                 placeholder="Coffee"
                 autoComplete="off"
                 enterKeyHint="done"
+                className="h-14 text-base"
               />
             </div>
           </div>

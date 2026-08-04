@@ -1,23 +1,27 @@
 import { normalize, terms } from "@/lib/text";
-import { EMOJI_PALETTE, type EmojiEntry } from "./palette";
+import { CATALOG, type CatalogEntry } from "./catalog";
 
-type Indexed = EmojiEntry & { haystack: string; normalizedName: string };
+type Indexed = CatalogEntry & { haystack: string; normalizedName: string };
 
-/** Built once at module load; the palette is static. */
-const INDEX: Indexed[] = EMOJI_PALETTE.map((entry) => ({
+/** Built once at module load; the catalog is static. */
+const INDEX: Indexed[] = CATALOG.map((entry) => ({
   ...entry,
   normalizedName: normalize(entry.name),
   haystack: normalize([entry.name, entry.category, ...entry.keywords].join(" ")),
 }));
 
 /**
- * Ranks by how directly the query names the emoji: a name that starts with the
- * query beats one that merely contains it, which beats a keyword-only hit.
- * Every term must match somewhere, so "green tea" narrows rather than widens.
+ * Ranks by how directly the query names the emoji: an exact name beats a
+ * prefix, which beats a substring, which beats a keyword-only hit. Every term
+ * must match somewhere, so "green tea" narrows rather than widens.
+ *
+ * Curated entries get a small bump on ties. With 1870 candidates a query like
+ * "water" matches a dozen things; the one a tracker actually wants should not
+ * be buried behind "water buffalo".
  */
-export function searchEmoji(query: string): EmojiEntry[] {
+export function searchEmoji(query: string): CatalogEntry[] {
   const parts = terms(query);
-  if (parts.length === 0) return EMOJI_PALETTE;
+  if (parts.length === 0) return CATALOG;
 
   const scored: { entry: Indexed; score: number }[] = [];
 
@@ -26,10 +30,11 @@ export function searchEmoji(query: string): EmojiEntry[] {
 
     const first = parts[0]!;
     let score = 0;
-    if (entry.normalizedName === first) score = 4;
-    else if (entry.normalizedName.startsWith(first)) score = 3;
-    else if (entry.normalizedName.includes(first)) score = 2;
-    else score = 1;
+    if (entry.normalizedName === first) score = 40;
+    else if (entry.normalizedName.startsWith(first)) score = 30;
+    else if (entry.normalizedName.includes(first)) score = 20;
+    else score = 10;
+    if (entry.common) score += 5;
 
     scored.push({ entry, score });
   }
