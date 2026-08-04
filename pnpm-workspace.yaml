@@ -1,8 +1,17 @@
+allowBuilds:
+  # Native image resizing, used by @vite-pwa/assets-generator to produce the
+  # PWA PNG icons from public/logo.svg at build time.
+  sharp: true
 catalog:
   vite: npm:@voidzero-dev/vite-plus-core@0.2.4
   vite-plus: 0.2.4
 overrides:
   vite: "catalog:"
+  # @tanstack/rxdb-db-collection has a hard dependency on rxdb@16.21.1 alongside
+  # its `>=16.17.2` peer. Without this override pnpm installs a second RxDB, which
+  # means two module instances, failing `instanceof` checks and duplicate Dexie
+  # handles against the same IndexedDB database.
+  rxdb: "17.4.0"
 peerDependencyRules:
   allowAny:
     - vite

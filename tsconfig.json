@@ -2,8 +2,9 @@
   "compilerOptions": {
     "target": "es2023",
     "module": "esnext",
-    "lib": ["ES2023", "DOM"],
-    "types": ["vite/client"],
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "types": ["vite/client", "vite-plugin-pwa/react"],
+    "jsx": "react-jsx",
     "allowArbitraryExtensions": true,
     "skipLibCheck": true,
 
@@ -14,11 +15,17 @@
     "moduleDetection": "force",
     "noEmit": true,
 
+    /* NOTE: deliberately no `baseUrl`. Vite+'s type-aware lint runs through
+       tsgolint, which does not support it and silently disables `typeAware` /
+       `typeCheck` when it is present. TS >= 5.4 resolves `paths` without it. */
+    "paths": { "@/*": ["./src/*"] },
+
     /* Linting */
+    "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"]
+  "include": ["src", "scripts"]
 }
