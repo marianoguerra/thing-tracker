@@ -10,6 +10,7 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 import type { Thing, TrackedEvent } from "@/db/schema";
+import { formatDuration } from "@/lib/duration";
 import { formatTime } from "@/lib/time";
 
 type Props = {
@@ -54,6 +55,12 @@ export function EventSheet({ open, title, thing, events, onClose, onEdit, onDele
                     month: "short",
                   })}{" "}
                   · {formatTime(event.actualAt)}
+                  {event.durationMs !== undefined && (
+                    <span className="text-muted-foreground">
+                      {" "}
+                      · {formatDuration(event.durationMs)}
+                    </span>
+                  )}
                 </div>
                 {event.notes && (
                   <div className="text-muted-foreground truncate text-xs">{event.notes}</div>

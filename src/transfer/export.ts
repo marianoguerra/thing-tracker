@@ -4,6 +4,9 @@ import {
   EventSchema,
   GroupSchema,
   ThingSchema,
+  eventRxSchema,
+  groupRxSchema,
+  thingRxSchema,
   type Group,
   type Thing,
   type TrackedEvent,
@@ -114,7 +117,13 @@ export async function buildBackup(
     version: ENVELOPE_VERSION,
     ...(appVersion ? { appVersion } : {}),
     exportedAt: Date.now(),
-    schemaVersions: { things: 0, groups: 0, events: 0 },
+    // Read from the schemas rather than written by hand, so a version bump
+    // can't silently leave backups claiming the wrong shape.
+    schemaVersions: {
+      things: thingRxSchema.version,
+      groups: groupRxSchema.version,
+      events: eventRxSchema.version,
+    },
     counts: {
       things: things.length,
       groups: groups.length,

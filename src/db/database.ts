@@ -66,11 +66,22 @@ async function createDatabase(): Promise<AppDatabase> {
   });
 
   await db.addCollections({
-    // Empty migrationStrategies + the migration plugin registered up front, so
-    // bumping a schema version later is one line rather than a plugin retrofit.
-    things: { schema: thingRxSchema, migrationStrategies: {} },
+    things: {
+      schema: thingRxSchema,
+      migrationStrategies: {
+        // v0 → v1: `duration` is optional and absent means "no duration
+        // tracking", so existing documents need no change.
+        1: (doc: Record<string, unknown>) => doc,
+      },
+    },
     groups: { schema: groupRxSchema, migrationStrategies: {} },
-    events: { schema: eventRxSchema, migrationStrategies: {} },
+    events: {
+      schema: eventRxSchema,
+      migrationStrategies: {
+        // v0 → v1: `durationMs` is optional; absent means "not measured".
+        1: (doc: Record<string, unknown>) => doc,
+      },
+    },
   });
 
   return db;

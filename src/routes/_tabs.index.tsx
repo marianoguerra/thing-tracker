@@ -66,8 +66,13 @@ function TrackRoute() {
         siblingEmoji={siblingEmoji}
         onClose={() => setThingEditor(null)}
         onSave={(draft) => {
-          if (thingEditor?.mode === "edit") updateThing(collections, thingEditor.thing.id, draft);
-          else createThing(collections, draft);
+          if (thingEditor?.mode === "edit") {
+            updateThing(collections, thingEditor.thing.id, draft, {
+              clearDuration: draft.duration === undefined,
+            });
+          } else {
+            createThing(collections, draft);
+          }
           setThingEditor(null);
         }}
         onDelete={(thing) => {

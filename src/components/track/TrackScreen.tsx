@@ -3,14 +3,16 @@ import { eq } from "@tanstack/db";
 import { useDeferredValue, useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import { DurationSheet } from "@/components/duration/DurationSheet";
 import type { Thing } from "@/db/schema";
 import { useCollections } from "@/db/provider";
-import { deleteEvent, logEvent } from "@/domain/events";
+import { deleteEvent, durationHistory, logEvent } from "@/domain/events";
 import { buildTagRows } from "@/domain/grouping";
 import { applyFrozenOrder, indexUsage } from "@/domain/ranking";
 import { filterThings } from "@/domain/search";
 import { useLocalStorageState } from "@/hooks/useLocalStorageState";
 import { useSectionCollapse } from "@/hooks/useSectionCollapse";
+import { commonDurations, formatDuration } from "@/lib/duration";
 import { formatTime } from "@/lib/time";
 import { EmptyState } from "./EmptyState";
 import { TagRow } from "./TagRow";
@@ -59,12 +61,28 @@ export function TrackScreen({ onInspectThing, onEditEvent, onCreateThing }: Prop
   const rowIds = useMemo(() => rows.map((row) => row.id), [rows]);
   const { isOpen, toggle, toggleAll, anyOpen } = useSectionCollapse(rowIds);
 
-  function handleLog(thing: Thing) {
-    const event = logEvent(collections, thing.id);
+  const [durationFor, setDurationFor] = useState<Thing | null>(null);
+  const durationPast = useMemo(
+    () => (durationFor ? durationHistory(collections, durationFor.id) : []),
+    [durationFor, collections],
+  );
+
+  /** Things with duration enabled ask how long first; everything else is one tap. */
+  function handleTap(thing: Thing) {
+    if (thing.duration) setDurationFor(thing);
+    else commitLog(thing);
+  }
+
+  function commitLog(thing: Thing, durationMs?: number) {
+    const event = logEvent(collections, thing.id, { durationMs });
     const toastId = toast(`${thing.emoji} ${thing.title}`, {
       description: (
         <span className="flex items-center gap-2">
-          <span>Logged at {formatTime(event.actualAt)}</span>
+          <span>
+            {event.durationMs
+              ? `${formatDuration(event.durationMs)} at ${formatTime(event.actualAt)}`
+              : `Logged at ${formatTime(event.actualAt)}`}
+          </span>
           {/*
             An explicit affordance rather than a tap-anywhere target: the toast
             already carries Undo, and a body that silently swallows taps is easy
@@ -147,12 +165,23 @@ export function TrackScreen({ onInspectThing, onEditEvent, onCreateThing }: Prop
                 if (!searching) toggle(row.id);
               }}
               onToggleAll={handleToggleAll}
-              onLog={handleLog}
+              onLog={handleTap}
               onInspect={onInspectThing}
             />
           ))}
         </div>
       )}
+
+      <DurationSheet
+        thing={durationFor}
+        common={commonDurations(durationPast)}
+        lastMs={durationPast[0]}
+        onCancel={() => setDurationFor(null)}
+        onConfirm={(durationMs) => {
+          if (durationFor) commitLog(durationFor, durationMs);
+          setDurationFor(null);
+        }}
+      />
     </>
   );
 }

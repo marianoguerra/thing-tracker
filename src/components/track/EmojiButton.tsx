@@ -1,3 +1,5 @@
+import { ClockIcon } from "lucide-react";
+
 import type { Thing } from "@/db/schema";
 import { usePressGesture } from "@/hooks/usePressGesture";
 import { formatRelative } from "@/lib/time";
@@ -33,8 +35,13 @@ export function EmojiButton({ thing, lastAt, total, compact, onLog, onLongPress 
       )}
       style={thing.color ? { borderColor: thing.color } : undefined}
     >
-      <span className="emoji text-3xl leading-none" aria-hidden>
+      <span className="emoji relative text-3xl leading-none" aria-hidden>
         {thing.emoji}
+        {/* A quiet mark that this one will ask how long, so the extra tap is
+            never a surprise. */}
+        {thing.duration && (
+          <ClockIcon className="text-muted-foreground absolute -top-0.5 -right-2 size-2.5" />
+        )}
       </span>
       {!compact && (
         <>

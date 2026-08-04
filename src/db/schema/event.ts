@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { MAX_DURATION_MS } from "@/lib/duration";
 import { newId } from "@/lib/id";
 import { compact } from "@/lib/object";
 import { MAX_TS, Timestamp, Uuid } from "./primitives";
@@ -35,6 +36,12 @@ export const EventSchema = z.object({
   recordedAt: Timestamp,
   /** When the thing actually happened. Defaults to `recordedAt`, editable. */
   actualAt: Timestamp,
+  /**
+   * How long it lasted, in milliseconds. Stored canonically in ms rather than
+   * as a value plus unit, so totals and comparisons never have to reconcile
+   * units — the unit is presentation and lives on the thing.
+   */
+  durationMs: z.number().min(0).max(MAX_DURATION_MS).multipleOf(1).optional(),
   notes: z.string().max(4000).optional(),
   attachments: z.array(AttachmentMetaSchema),
 });
@@ -42,7 +49,8 @@ export const EventSchema = z.object({
 export type TrackedEvent = z.infer<typeof EventSchema>;
 
 export const eventRxSchema = toRxSchema(EventSchema, {
-  version: 0,
+  // v1 added the optional `durationMs`.
+  version: 1,
   primaryKey: "id",
   indexes: [
     // "latest event for this thing" and "this thing, in this date range".
@@ -66,6 +74,7 @@ export function newEvent(
     thingId: input.thingId,
     recordedAt,
     actualAt: input.actualAt ?? recordedAt,
+    durationMs: input.durationMs,
     notes: input.notes,
     attachments: input.attachments ?? [],
   });

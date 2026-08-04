@@ -10,19 +10,29 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { Thing } from "@/db/schema";
+import { DURATION_UNITS, type DurationUnit } from "@/lib/duration";
+import { cn } from "@/lib/utils";
 
 const DEFAULT_EMOJI = "⭐";
 
 export type ThingEditorState = { mode: "create"; title?: string } | { mode: "edit"; thing: Thing };
 
+export type ThingDraftValues = {
+  emoji: string;
+  title: string;
+  description?: string;
+  duration?: { defaultUnit: DurationUnit };
+};
+
 type Props = {
   state: ThingEditorState | null;
   onClose: () => void;
-  onSave: (draft: { emoji: string; title: string; description?: string }) => void;
+  onSave: (draft: ThingDraftValues) => void;
   onDelete?: (thing: Thing) => void;
   /** Emoji already used by things sharing a group, for the clash warning. */
   siblingEmoji?: Map<string, string>;
@@ -33,6 +43,8 @@ export function ThingEditorDrawer({ state, onClose, onSave, onDelete, siblingEmo
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [tracksDuration, setTracksDuration] = useState(false);
+  const [durationUnit, setDurationUnit] = useState<DurationUnit>("minutes");
 
   useEffect(() => {
     if (!state) return;
@@ -40,10 +52,14 @@ export function ThingEditorDrawer({ state, onClose, onSave, onDelete, siblingEmo
       setEmoji(state.thing.emoji);
       setTitle(state.thing.title);
       setDescription(state.thing.description ?? "");
+      setTracksDuration(state.thing.duration !== undefined);
+      setDurationUnit(state.thing.duration?.defaultUnit ?? "minutes");
     } else {
       setEmoji(DEFAULT_EMOJI);
       setTitle(state.title ?? "");
       setDescription("");
+      setTracksDuration(false);
+      setDurationUnit("minutes");
     }
     setPickerOpen(state.mode === "create");
   }, [state]);
@@ -108,6 +124,48 @@ export function ThingEditorDrawer({ state, onClose, onSave, onDelete, siblingEmo
             />
           )}
 
+          <div className="space-y-2">
+            <div className="flex items-start gap-2">
+              <Checkbox
+                id="thing-duration"
+                checked={tracksDuration}
+                onCheckedChange={(next) => setTracksDuration(next === true)}
+              />
+              <div className="grid gap-1">
+                <Label htmlFor="thing-duration" className="text-sm font-normal">
+                  Track how long it lasts
+                </Label>
+                <p className="text-muted-foreground text-xs">
+                  Tapping this thing will ask for a duration, pre-filled with last time&apos;s.
+                </p>
+              </div>
+            </div>
+
+            {tracksDuration && (
+              <div className="pl-6">
+                <Label className="text-muted-foreground text-xs">Usually measured in</Label>
+                <div className="mt-1 flex gap-1.5">
+                  {DURATION_UNITS.map((unit) => (
+                    <button
+                      key={unit}
+                      type="button"
+                      onClick={() => setDurationUnit(unit)}
+                      aria-pressed={durationUnit === unit}
+                      className={cn(
+                        "rounded-full border px-3 py-1 text-xs font-medium capitalize",
+                        durationUnit === unit
+                          ? "bg-primary text-primary-foreground border-transparent"
+                          : "border-border text-muted-foreground",
+                      )}
+                    >
+                      {unit}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
           <div className="space-y-1.5">
             <Label htmlFor="thing-description">Notes (optional)</Label>
             <Textarea
@@ -124,7 +182,12 @@ export function ThingEditorDrawer({ state, onClose, onSave, onDelete, siblingEmo
           <Button
             disabled={!canSave}
             onClick={() => {
-              onSave({ emoji, title: title.trim(), description: description.trim() || undefined });
+              onSave({
+                emoji,
+                title: title.trim(),
+                description: description.trim() || undefined,
+                duration: tracksDuration ? { defaultUnit: durationUnit } : undefined,
+              });
             }}
           >
             {editing ? "Save" : "Create"}
