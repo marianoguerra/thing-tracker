@@ -1,6 +1,10 @@
 import { Outlet, createRootRoute } from "@tanstack/react-router";
+import { Suspense } from "react";
 
+import { SplashScreen } from "@/components/layout/SplashScreen";
+import { StorageErrorBoundary } from "@/components/layout/StorageErrorBoundary";
 import { Toaster } from "@/components/ui/sonner";
+import { DbProvider } from "@/db/provider";
 
 export const Route = createRootRoute({
   component: RootLayout,
@@ -9,10 +13,14 @@ export const Route = createRootRoute({
 
 function RootLayout() {
   return (
-    <>
-      <Outlet />
-      <Toaster />
-    </>
+    <StorageErrorBoundary>
+      <Suspense fallback={<SplashScreen />}>
+        <DbProvider>
+          <Outlet />
+          <Toaster />
+        </DbProvider>
+      </Suspense>
+    </StorageErrorBoundary>
   );
 }
 
