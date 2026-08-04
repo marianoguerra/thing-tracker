@@ -1,4 +1,4 @@
-import { ClockIcon } from "lucide-react";
+import { RulerIcon } from "lucide-react";
 
 import type { Thing } from "@/db/schema";
 import { usePressGesture } from "@/hooks/usePressGesture";
@@ -37,10 +37,10 @@ export function EmojiButton({ thing, lastAt, total, compact, onLog, onLongPress 
     >
       <span className="emoji relative text-3xl leading-none" aria-hidden>
         {thing.emoji}
-        {/* A quiet mark that this one will ask how long, so the extra tap is
-            never a surprise. */}
-        {thing.duration && (
-          <ClockIcon className="text-muted-foreground absolute -top-0.5 -right-2 size-2.5" />
+        {/* A quiet mark that this one will ask for a value, so the extra tap
+            is never a surprise. */}
+        {thing.measurements.length > 0 && (
+          <RulerIcon className="text-muted-foreground absolute -top-0.5 -right-2 size-2.5" />
         )}
       </span>
       {!compact && (

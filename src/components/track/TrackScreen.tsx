@@ -3,18 +3,19 @@ import { eq } from "@tanstack/db";
 import { useDeferredValue, useMemo, useState } from "react";
 import { toast } from "sonner";
 
-import { DurationSheet } from "@/components/duration/DurationSheet";
+import { MeasurementSheet, type MeasurementPrompt } from "@/components/measure/MeasurementSheet";
 import { InstallHint } from "@/components/pwa/InstallHint";
 import { StorageBanner } from "@/components/pwa/StorageBanner";
 import type { Thing } from "@/db/schema";
 import { useCollections } from "@/db/provider";
-import { deleteEvent, durationHistory, logEvent } from "@/domain/events";
+import { deleteEvent, logEvent } from "@/domain/events";
+import { buildPrompts, indexMeasurements } from "@/domain/measurements";
 import { buildTagRows } from "@/domain/grouping";
 import { applyFrozenOrder, indexUsage } from "@/domain/ranking";
 import { filterThings } from "@/domain/search";
 import { useLocalStorageState } from "@/hooks/useLocalStorageState";
 import { useSectionCollapse } from "@/hooks/useSectionCollapse";
-import { commonDurations, formatDuration } from "@/lib/duration";
+import { formatMeasurement } from "@/lib/measure/format";
 import { formatTime } from "@/lib/time";
 import { EmptyState } from "./EmptyState";
 import { TagRow } from "./TagRow";
@@ -45,6 +46,9 @@ export function TrackScreen({ onInspectThing, onEditEvent, onCreateThing }: Prop
   );
   const { data: groupRows } = useLiveQuery((q) => q.from({ group: groups }));
   const { data: usageRows } = useLiveQuery((q) => q.from({ usage: usageByThing }));
+  const { data: measurementRows } = useLiveQuery((q) =>
+    q.from({ measurement: collections.measurements }),
+  );
 
   const usage = useMemo(() => indexUsage(usageRows), [usageRows]);
   const frozenOrder = useStableOrder(thingRows, usage);
@@ -63,26 +67,32 @@ export function TrackScreen({ onInspectThing, onEditEvent, onCreateThing }: Prop
   const rowIds = useMemo(() => rows.map((row) => row.id), [rows]);
   const { isOpen, toggle, toggleAll, anyOpen } = useSectionCollapse(rowIds);
 
-  const [durationFor, setDurationFor] = useState<Thing | null>(null);
-  const durationPast = useMemo(
-    () => (durationFor ? durationHistory(collections, durationFor.id) : []),
-    [durationFor, collections],
+  const [measuring, setMeasuring] = useState<Thing | null>(null);
+  const measurementById = useMemo(() => indexMeasurements(measurementRows), [measurementRows]);
+  const prompts = useMemo<MeasurementPrompt[]>(
+    () => (measuring ? buildPrompts(collections, measuring, measurementById) : []),
+    [measuring, collections, measurementById],
   );
 
-  /** Things with duration enabled ask how long first; everything else is one tap. */
+  /** Things that record measurements ask for them first; the rest are one tap. */
   function handleTap(thing: Thing) {
-    if (thing.duration) setDurationFor(thing);
+    if (thing.measurements.length > 0) setMeasuring(thing);
     else commitLog(thing);
   }
 
-  function commitLog(thing: Thing, durationMs?: number) {
-    const event = logEvent(collections, thing.id, { durationMs });
+  function commitLog(thing: Thing, measurements?: { measurementId: string; value: number }[]) {
+    const event = logEvent(collections, thing.id, { measurements });
     const toastId = toast(`${thing.emoji} ${thing.title}`, {
       description: (
         <span className="flex items-center gap-2">
           <span>
-            {event.durationMs
-              ? `${formatDuration(event.durationMs)} at ${formatTime(event.actualAt)}`
+            {event.measurements.length > 0
+              ? `${event.measurements
+                  .map((m) => {
+                    const measurement = measurementById.get(m.measurementId);
+                    return measurement ? formatMeasurement(measurement, m.value) : String(m.value);
+                  })
+                  .join(" · ")} at ${formatTime(event.actualAt)}`
               : `Logged at ${formatTime(event.actualAt)}`}
           </span>
           {/*
@@ -182,14 +192,13 @@ export function TrackScreen({ onInspectThing, onEditEvent, onCreateThing }: Prop
         </div>
       )}
 
-      <DurationSheet
-        thing={durationFor}
-        common={commonDurations(durationPast)}
-        lastMs={durationPast[0]}
-        onCancel={() => setDurationFor(null)}
-        onConfirm={(durationMs) => {
-          if (durationFor) commitLog(durationFor, durationMs);
-          setDurationFor(null);
+      <MeasurementSheet
+        thing={measuring}
+        prompts={prompts}
+        onCancel={() => setMeasuring(null)}
+        onConfirm={(values) => {
+          if (measuring) commitLog(measuring, values);
+          setMeasuring(null);
         }}
       />
     </>

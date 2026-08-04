@@ -8,6 +8,7 @@ import { InsightsScreen } from "@/components/insights/InsightsScreen";
 import { useCollections } from "@/db/provider";
 import { GRANULARITIES } from "@/domain/buckets";
 import { deleteEvent, updateEvent } from "@/domain/events";
+import { indexMeasurements } from "@/domain/measurements";
 
 // In the URL so a view is linkable and survives reload — and `.catch()` so a
 // hand-edited or stale link degrades to the default instead of erroring.
@@ -29,6 +30,10 @@ function InsightsRoute() {
 
   const { data: events } = useLiveQuery((q) => q.from({ event: collections.events }));
   const { data: things } = useLiveQuery((q) => q.from({ thing: collections.things }));
+  const { data: measurements } = useLiveQuery((q) =>
+    q.from({ measurement: collections.measurements }),
+  );
+  const measurementById = useMemo(() => indexMeasurements(measurements), [measurements]);
 
   const editingEvent = useMemo(
     () => events.find((event) => event.id === editingEventId) ?? null,
@@ -59,6 +64,7 @@ function InsightsRoute() {
       <EventEditorDrawer
         event={editingEvent}
         thing={editingThing}
+        measurementById={measurementById}
         onClose={() => setEditingEventId(null)}
         onSave={(patch) => {
           if (editingEventId) updateEvent(collections, editingEventId, patch);

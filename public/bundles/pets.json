@@ -34,6 +34,12 @@
       "emoji": "🐕",
       "title": "Walk",
       "archived": false,
+      "measurements": [
+        {
+          "measurementId": "696604f4-05a0-5f3e-a9d3-da5c0efc867c",
+          "unit": "min"
+        }
+      ],
       "bundleId": "pets",
       "createdAt": 0,
       "updatedAt": 0
@@ -43,6 +49,7 @@
       "emoji": "🍖",
       "title": "Fed",
       "archived": false,
+      "measurements": [],
       "bundleId": "pets",
       "createdAt": 0,
       "updatedAt": 0
@@ -52,6 +59,7 @@
       "emoji": "💊",
       "title": "Medication",
       "archived": false,
+      "measurements": [],
       "bundleId": "pets",
       "createdAt": 0,
       "updatedAt": 0
@@ -61,6 +69,7 @@
       "emoji": "🏥",
       "title": "Vet",
       "archived": false,
+      "measurements": [],
       "bundleId": "pets",
       "createdAt": 0,
       "updatedAt": 0
@@ -70,6 +79,7 @@
       "emoji": "✂️",
       "title": "Groomed",
       "archived": false,
+      "measurements": [],
       "bundleId": "pets",
       "createdAt": 0,
       "updatedAt": 0
@@ -79,7 +89,66 @@
       "emoji": "🎾",
       "title": "Play",
       "archived": false,
+      "measurements": [],
       "bundleId": "pets",
+      "createdAt": 0,
+      "updatedAt": 0
+    }
+  ],
+  "measurements": [
+    {
+      "id": "696604f4-05a0-5f3e-a9d3-da5c0efc867c",
+      "name": "Duration",
+      "emoji": "⏱️",
+      "baseUnit": "ms",
+      "defaultUnit": "min",
+      "units": [
+        {
+          "id": "ms",
+          "label": "milliseconds",
+          "symbol": "ms",
+          "factor": 1,
+          "precision": 0
+        },
+        {
+          "id": "s",
+          "label": "seconds",
+          "symbol": "s",
+          "factor": 1000,
+          "precision": 0
+        },
+        {
+          "id": "min",
+          "label": "minutes",
+          "symbol": "m",
+          "factor": 60000,
+          "precision": 0
+        },
+        {
+          "id": "h",
+          "label": "hours",
+          "symbol": "h",
+          "factor": 3600000,
+          "precision": 2
+        },
+        {
+          "id": "d",
+          "label": "days",
+          "symbol": "d",
+          "factor": 86400000,
+          "precision": 2
+        }
+      ],
+      "steps": [
+        1,
+        5,
+        10,
+        15,
+        30,
+        60
+      ],
+      "stepUnit": "min",
+      "builtinId": "duration",
       "createdAt": 0,
       "updatedAt": 0
     }

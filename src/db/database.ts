@@ -9,19 +9,43 @@ import { RxDBAttachmentsPlugin } from "rxdb/plugins/attachments";
 import { RxDBMigrationSchemaPlugin } from "rxdb/plugins/migration-schema";
 import { getRxStorageDexie } from "rxdb/plugins/storage-dexie";
 
+import { DURATION_MEASUREMENT_ID, builtinMeasurements } from "@/measurements/ids";
 import {
   eventRxSchema,
   groupRxSchema,
+  measurementRxSchema,
   thingRxSchema,
   type Group,
+  type Measurement,
   type Thing,
   type TrackedEvent,
 } from "./schema";
+
+/** v1 stored plain unit names; v2 uses the Duration measurement's unit ids. */
+const LEGACY_UNIT_IDS: Record<string, string> = {
+  seconds: "s",
+  minutes: "min",
+  hours: "h",
+  days: "d",
+};
+
+/**
+ * Ensures the predefined measurements exist.
+ *
+ * Upserted rather than inserted-if-empty so a later release can add units or
+ * fix a factor and have existing installs pick it up — the ids are fixed, so
+ * this can never fork a user's data. Values already recorded are in base units
+ * and are unaffected by unit-list changes.
+ */
+async function seedBuiltinMeasurements(db: AppDatabase): Promise<void> {
+  await db.measurements.bulkUpsert(builtinMeasurements());
+}
 
 export type AppCollections = {
   things: RxCollection<Thing>;
   groups: RxCollection<Group>;
   events: RxCollection<TrackedEvent>;
+  measurements: RxCollection<Measurement>;
 };
 
 export type AppDatabase = RxDatabase<AppCollections>;
@@ -66,23 +90,55 @@ async function createDatabase(): Promise<AppDatabase> {
   });
 
   await db.addCollections({
+    measurements: { schema: measurementRxSchema, migrationStrategies: {} },
     things: {
       schema: thingRxSchema,
       migrationStrategies: {
-        // v0 → v1: `duration` is optional and absent means "no duration
-        // tracking", so existing documents need no change.
+        // v0 → v1: `duration` was optional; absent meant no duration tracking.
         1: (doc: Record<string, unknown>) => doc,
+        // v1 → v2: the duration flag becomes a reference to the Duration
+        // measurement, carrying the chosen unit across so nothing is re-typed.
+        2: (doc: Record<string, unknown>) => {
+          const duration = doc.duration as { defaultUnit?: string } | undefined;
+          const { duration: _dropped, ...rest } = doc;
+          return {
+            ...rest,
+            measurements: duration
+              ? [
+                  {
+                    measurementId: DURATION_MEASUREMENT_ID,
+                    unit: LEGACY_UNIT_IDS[duration.defaultUnit ?? "minutes"] ?? "min",
+                  },
+                ]
+              : [],
+          };
+        },
       },
     },
     groups: { schema: groupRxSchema, migrationStrategies: {} },
     events: {
       schema: eventRxSchema,
       migrationStrategies: {
-        // v0 → v1: `durationMs` is optional; absent means "not measured".
+        // v0 → v1: `durationMs` was optional; absent meant "not measured".
         1: (doc: Record<string, unknown>) => doc,
+        // v1 → v2: a recorded duration becomes a measurement value. Duration's
+        // base unit is milliseconds, so the number carries over untouched.
+        2: (doc: Record<string, unknown>) => {
+          const durationMs = doc.durationMs as number | undefined;
+          const { durationMs: _dropped, ...rest } = doc;
+          return {
+            ...rest,
+            measurements:
+              typeof durationMs === "number" && durationMs > 0
+                ? [{ measurementId: DURATION_MEASUREMENT_ID, value: durationMs }]
+                : [],
+          };
+        },
       },
     },
   });
+
+  await seedBuiltinMeasurements(db);
 
   return db;
 }

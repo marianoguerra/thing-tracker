@@ -8,7 +8,16 @@ export {
   type AttachmentMeta,
   type TrackedEvent,
 } from "./event";
+export { EventMeasurementSchema, type EventMeasurement } from "./event";
 export { GroupSchema, groupRxSchema, newGroup, type Group } from "./group";
+export {
+  MeasurementSchema,
+  UnitSchema,
+  measurementRxSchema,
+  newMeasurement,
+  type Measurement,
+  type Unit,
+} from "./measurement";
 export { MAX_TS } from "./primitives";
-export { ThingSchema, newThing, thingRxSchema, type Thing } from "./thing";
+export { ThingMeasurementSchema, ThingSchema, newThing, thingRxSchema, type Thing } from "./thing";
 export { assertRxIndexable, toRxSchema } from "./to-rx-schema";

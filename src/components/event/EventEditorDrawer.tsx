@@ -12,17 +12,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import type { Thing, TrackedEvent } from "@/db/schema";
-import {
-  DURATION_UNITS,
-  clampDuration,
-  formatDuration,
-  formatValue,
-  fromMs,
-  naturalUnit,
-  toMs,
-  type DurationUnit,
-} from "@/lib/duration";
+import type { EventMeasurement, Measurement, Thing, TrackedEvent } from "@/db/schema";
+import { findUnit, fromBase, roundTo, toBase } from "@/lib/measure/convert";
+import { formatMeasurement, preferredUnit } from "@/lib/measure/format";
 import { formatRelative, fromDatetimeLocal, toDatetimeLocal } from "@/lib/time";
 import { cn } from "@/lib/utils";
 
@@ -30,31 +22,57 @@ type Props = {
   event: TrackedEvent | null;
   thing: Thing | undefined;
   onClose: () => void;
-  onSave: (patch: { actualAt: number; notes: string; durationMs?: number }) => void;
+  onSave: (patch: { actualAt: number; notes: string; measurements: EventMeasurement[] }) => void;
   onDelete: () => void;
+  /** Every registered measurement, for resolving ids to scales. */
+  measurementById: Map<string, Measurement>;
 };
 
-export function EventEditorDrawer({ event, thing, onClose, onSave, onDelete }: Props) {
+export function EventEditorDrawer({
+  event,
+  thing,
+  onClose,
+  onSave,
+  onDelete,
+  measurementById,
+}: Props) {
   const [when, setWhen] = useState("");
   const [notes, setNotes] = useState("");
-  const [durationMs, setDurationMs] = useState(0);
-  const [unit, setUnit] = useState<DurationUnit>("minutes");
-  const [durationText, setDurationText] = useState("");
+  const [values, setValues] = useState<
+    Record<string, { base: number; unitId: string; text: string }>
+  >({});
 
   useEffect(() => {
     if (!event) return;
     setWhen(toDatetimeLocal(event.actualAt));
     setNotes(event.notes ?? "");
-    const ms = event.durationMs ?? 0;
-    const nextUnit = thing?.duration?.defaultUnit ?? naturalUnit(ms);
-    setDurationMs(ms);
-    setUnit(nextUnit);
-    setDurationText(ms > 0 ? formatValue(fromMs(ms, nextUnit)) : "");
-  }, [event, thing]);
 
-  // Shown when the thing tracks duration, or when this entry already has one —
-  // so turning the setting off never orphans a value the user can't see.
-  const showDuration = thing?.duration !== undefined || (event?.durationMs ?? 0) > 0;
+    // Everything the thing declares, plus anything this entry already carries —
+    // so turning a measurement off on the thing never orphans a recorded value
+    // where nobody can see or correct it.
+    const ids = new Set([
+      ...(thing?.measurements ?? []).map((m) => m.measurementId),
+      ...event.measurements.map((m) => m.measurementId),
+    ]);
+    const next: Record<string, { base: number; unitId: string; text: string }> = {};
+    for (const id of ids) {
+      const measurement = measurementById.get(id);
+      if (!measurement) continue;
+      const base = event.measurements.find((m) => m.measurementId === id)?.value ?? 0;
+      const thingUnit = thing?.measurements.find((m) => m.measurementId === id)?.unit;
+      const unit = preferredUnit(measurement, thingUnit, base);
+      next[id] = {
+        base,
+        unitId: unit.id,
+        text: base > 0 ? String(roundTo(fromBase(base, unit), unit.precision ?? 2)) : "",
+      };
+    }
+    setValues(next);
+  }, [event, thing, measurementById]);
+
+  const rows = Object.keys(values)
+    .map((id) => measurementById.get(id))
+    .filter((m): m is Measurement => m !== undefined);
 
   const parsed = fromDatetimeLocal(when);
   const valid = parsed !== null;
@@ -93,60 +111,79 @@ export function EventEditorDrawer({ event, thing, onClose, onSave, onDelete }: P
             {!valid && <p className="text-destructive text-xs">That isn&apos;t a valid time.</p>}
           </div>
 
-          {showDuration && (
-            <div className="space-y-1.5">
-              <Label htmlFor="event-duration">How long</Label>
-              <div className="flex items-center gap-2">
-                <Input
-                  id="event-duration"
-                  type="number"
-                  inputMode="decimal"
-                  min={0}
-                  step="any"
-                  placeholder="0"
-                  value={durationText}
-                  onChange={(e) => {
-                    setDurationText(e.target.value);
-                    const parsed = Number(e.target.value);
-                    setDurationMs(
-                      e.target.value.trim() === "" || Number.isNaN(parsed)
-                        ? 0
-                        : clampDuration(toMs(parsed, unit)),
-                    );
-                  }}
-                  className="w-24 tabular-nums"
-                />
-                <div className="flex gap-1">
-                  {DURATION_UNITS.map((option) => (
-                    <button
-                      key={option}
-                      type="button"
-                      onClick={() => {
-                        setUnit(option);
-                        setDurationText(
-                          durationMs > 0 ? formatValue(fromMs(durationMs, option)) : "",
-                        );
-                      }}
-                      aria-pressed={unit === option}
-                      className={cn(
-                        "rounded px-2 py-1 text-xs font-medium capitalize",
-                        unit === option
-                          ? "bg-primary text-primary-foreground"
-                          : "text-muted-foreground",
-                      )}
-                    >
-                      {option}
-                    </button>
-                  ))}
+          {rows.map((measurement) => {
+            const draft = values[measurement.id]!;
+            const unit = findUnit(measurement.units, draft.unitId) ?? measurement.units[0]!;
+            return (
+              <div key={measurement.id} className="space-y-1.5">
+                <Label htmlFor={`event-m-${measurement.id}`}>{measurement.name}</Label>
+                <div className="flex items-start gap-2">
+                  <Input
+                    id={`event-m-${measurement.id}`}
+                    type="number"
+                    inputMode="decimal"
+                    min={0}
+                    step="any"
+                    placeholder="0"
+                    value={draft.text}
+                    onChange={(e) => {
+                      const text = e.target.value;
+                      const parsed = Number(text);
+                      setValues((prev) => ({
+                        ...prev,
+                        [measurement.id]: {
+                          ...draft,
+                          text,
+                          base:
+                            text.trim() === "" || Number.isNaN(parsed)
+                              ? 0
+                              : Math.max(0, toBase(parsed, unit)),
+                        },
+                      }));
+                    }}
+                    className="w-24 tabular-nums"
+                  />
+                  <div className="flex max-h-20 flex-wrap gap-1 overflow-y-auto">
+                    {measurement.units.map((option) => (
+                      <button
+                        key={option.id}
+                        type="button"
+                        aria-pressed={option.id === draft.unitId}
+                        onClick={() => {
+                          setValues((prev) => ({
+                            ...prev,
+                            [measurement.id]: {
+                              ...draft,
+                              unitId: option.id,
+                              text:
+                                draft.base > 0
+                                  ? String(
+                                      roundTo(fromBase(draft.base, option), option.precision ?? 2),
+                                    )
+                                  : "",
+                            },
+                          }));
+                        }}
+                        className={cn(
+                          "rounded px-2 py-1 text-xs font-medium",
+                          option.id === draft.unitId
+                            ? "bg-primary text-primary-foreground"
+                            : "text-muted-foreground",
+                        )}
+                      >
+                        {option.symbol.trim() || option.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
+                {draft.base > 0 && (
+                  <p className="text-muted-foreground text-xs tabular-nums">
+                    {formatMeasurement(measurement, draft.base, draft.unitId)}
+                  </p>
+                )}
               </div>
-              {durationMs > 0 && (
-                <p className="text-muted-foreground text-xs tabular-nums">
-                  {formatDuration(durationMs)}
-                </p>
-              )}
-            </div>
-          )}
+            );
+          })}
 
           <div className="space-y-1.5">
             <Label htmlFor="event-notes">Notes (optional)</Label>
@@ -164,7 +201,15 @@ export function EventEditorDrawer({ event, thing, onClose, onSave, onDelete }: P
           <Button
             disabled={!valid}
             onClick={() => {
-              if (parsed !== null) onSave({ actualAt: parsed, notes, durationMs });
+              if (parsed !== null) {
+                onSave({
+                  actualAt: parsed,
+                  notes,
+                  measurements: Object.entries(values)
+                    .filter(([, draft]) => draft.base > 0)
+                    .map(([measurementId, draft]) => ({ measurementId, value: draft.base })),
+                });
+              }
             }}
           >
             Save

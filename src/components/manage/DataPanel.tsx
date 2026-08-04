@@ -27,7 +27,7 @@ export function DataPanel({ onImportText }: Props) {
     setBusy(true);
     try {
       const backup = await buildBackup(db, collections);
-      await saveOrShare(JSON.stringify(backup, null, 2), backupFilename());
+      await saveOrShare(JSON.stringify(backup, null, 2), backupFilename(backup.range));
       if (backup.attachmentsOmitted) {
         // Never let a partial backup pass as a complete one.
         toast.warning("Media not included", {

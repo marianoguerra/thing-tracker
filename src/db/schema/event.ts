@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-import { MAX_DURATION_MS } from "@/lib/duration";
 import { newId } from "@/lib/id";
 import { compact } from "@/lib/object";
 import { MAX_TS, Timestamp, Uuid } from "./primitives";
@@ -29,6 +28,14 @@ export const AttachmentMetaSchema = z.object({
 
 export type AttachmentMeta = z.infer<typeof AttachmentMetaSchema>;
 
+export const EventMeasurementSchema = z.object({
+  measurementId: Uuid,
+  /** In the measurement's base unit. */
+  value: z.number(),
+});
+
+export type EventMeasurement = z.infer<typeof EventMeasurementSchema>;
+
 export const EventSchema = z.object({
   id: Uuid,
   thingId: Uuid,
@@ -37,11 +44,13 @@ export const EventSchema = z.object({
   /** When the thing actually happened. Defaults to `recordedAt`, editable. */
   actualAt: Timestamp,
   /**
-   * How long it lasted, in milliseconds. Stored canonically in ms rather than
-   * as a value plus unit, so totals and comparisons never have to reconcile
-   * units — the unit is presentation and lives on the thing.
+   * Recorded quantities, always in the measurement's base unit.
+   *
+   * Storing canonical values rather than a number-plus-unit pair means totals
+   * and comparisons never have to reconcile units, and someone switching from
+   * miles to kilometres reinterprets nothing.
    */
-  durationMs: z.number().min(0).max(MAX_DURATION_MS).multipleOf(1).optional(),
+  measurements: z.array(EventMeasurementSchema),
   notes: z.string().max(4000).optional(),
   attachments: z.array(AttachmentMetaSchema),
 });
@@ -49,8 +58,8 @@ export const EventSchema = z.object({
 export type TrackedEvent = z.infer<typeof EventSchema>;
 
 export const eventRxSchema = toRxSchema(EventSchema, {
-  // v1 added the optional `durationMs`.
-  version: 1,
+  // v1 added `durationMs`; v2 generalised it to a `measurements` array.
+  version: 2,
   primaryKey: "id",
   indexes: [
     // "latest event for this thing" and "this thing, in this date range".
@@ -74,7 +83,7 @@ export function newEvent(
     thingId: input.thingId,
     recordedAt,
     actualAt: input.actualAt ?? recordedAt,
-    durationMs: input.durationMs,
+    measurements: input.measurements ?? [],
     notes: input.notes,
     attachments: input.attachments ?? [],
   });

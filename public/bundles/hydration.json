@@ -34,6 +34,12 @@
       "emoji": "💧",
       "title": "Water",
       "archived": false,
+      "measurements": [
+        {
+          "measurementId": "c0ee2368-6ea4-5233-8e13-63dec48435b1",
+          "unit": "ml"
+        }
+      ],
       "bundleId": "hydration",
       "createdAt": 0,
       "updatedAt": 0
@@ -43,6 +49,7 @@
       "emoji": "☕",
       "title": "Coffee",
       "archived": false,
+      "measurements": [],
       "bundleId": "hydration",
       "createdAt": 0,
       "updatedAt": 0
@@ -52,6 +59,7 @@
       "emoji": "🍵",
       "title": "Tea",
       "archived": false,
+      "measurements": [],
       "bundleId": "hydration",
       "createdAt": 0,
       "updatedAt": 0
@@ -61,6 +69,7 @@
       "emoji": "🥤",
       "title": "Soft drink",
       "archived": false,
+      "measurements": [],
       "bundleId": "hydration",
       "createdAt": 0,
       "updatedAt": 0
@@ -70,6 +79,7 @@
       "emoji": "🍺",
       "title": "Beer",
       "archived": false,
+      "measurements": [],
       "bundleId": "hydration",
       "createdAt": 0,
       "updatedAt": 0
@@ -79,7 +89,73 @@
       "emoji": "🍷",
       "title": "Wine",
       "archived": false,
+      "measurements": [],
       "bundleId": "hydration",
+      "createdAt": 0,
+      "updatedAt": 0
+    }
+  ],
+  "measurements": [
+    {
+      "id": "c0ee2368-6ea4-5233-8e13-63dec48435b1",
+      "name": "Volume",
+      "emoji": "🥤",
+      "baseUnit": "ml",
+      "defaultUnit": "ml",
+      "units": [
+        {
+          "id": "ml",
+          "label": "millilitres",
+          "symbol": "ml",
+          "factor": 1,
+          "precision": 0
+        },
+        {
+          "id": "l",
+          "label": "litres",
+          "symbol": "l",
+          "factor": 1000,
+          "precision": 2
+        },
+        {
+          "id": "floz",
+          "label": "fluid ounces (US)",
+          "symbol": "fl oz",
+          "factor": 29.5735295625,
+          "precision": 1
+        },
+        {
+          "id": "cup",
+          "label": "cups (US)",
+          "symbol": "cup",
+          "factor": 236.5882365,
+          "precision": 2
+        },
+        {
+          "id": "pt",
+          "label": "pints (US)",
+          "symbol": "pt",
+          "factor": 473.176473,
+          "precision": 2
+        },
+        {
+          "id": "galuk",
+          "label": "gallons (UK)",
+          "symbol": "gal",
+          "factor": 4546.09,
+          "precision": 2
+        }
+      ],
+      "steps": [
+        50,
+        100,
+        250,
+        330,
+        500,
+        1000
+      ],
+      "stepUnit": "ml",
+      "builtinId": "volume",
       "createdAt": 0,
       "updatedAt": 0
     }

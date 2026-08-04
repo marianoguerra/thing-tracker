@@ -32,12 +32,33 @@ const habits: BundleDef = {
       title: "Exercise",
       emoji: "🏃",
       things: [
-        { slug: "run", emoji: "🏃", title: "Run" },
-        { slug: "walk", emoji: "🚶", title: "Walk" },
-        { slug: "gym", emoji: "🏋️", title: "Gym" },
-        { slug: "yoga", emoji: "🧘", title: "Yoga" },
-        { slug: "cycle", emoji: "🚴", title: "Cycle" },
-        { slug: "stretch", emoji: "🤸", title: "Stretch" },
+        {
+          slug: "run",
+          emoji: "🏃",
+          title: "Run",
+          measures: [
+            { slug: "distance", unit: "km" },
+            { slug: "duration", unit: "min" },
+          ],
+        },
+        { slug: "walk", emoji: "🚶", title: "Walk", measures: [{ slug: "duration", unit: "min" }] },
+        { slug: "gym", emoji: "🏋️", title: "Gym", measures: [{ slug: "duration", unit: "min" }] },
+        { slug: "yoga", emoji: "🧘", title: "Yoga", measures: [{ slug: "duration", unit: "min" }] },
+        {
+          slug: "cycle",
+          emoji: "🚴",
+          title: "Cycle",
+          measures: [
+            { slug: "distance", unit: "km" },
+            { slug: "duration", unit: "min" },
+          ],
+        },
+        {
+          slug: "stretch",
+          emoji: "🤸",
+          title: "Stretch",
+          measures: [{ slug: "duration", unit: "min" }],
+        },
       ],
     },
     {
@@ -47,7 +68,7 @@ const habits: BundleDef = {
       things: [
         { slug: "bedtime", emoji: "🛏️", title: "Went to bed" },
         { slug: "wake", emoji: "🌅", title: "Woke up" },
-        { slug: "nap", emoji: "💤", title: "Nap" },
+        { slug: "nap", emoji: "💤", title: "Nap", measures: [{ slug: "duration", unit: "min" }] },
         { slug: "woke-in-night", emoji: "🌙", title: "Woke in the night" },
       ],
     },
@@ -58,7 +79,12 @@ const habits: BundleDef = {
       things: [
         { slug: "read", emoji: "📖", title: "Read" },
         { slug: "music-practice", emoji: "🎸", title: "Practised music" },
-        { slug: "gaming", emoji: "🎮", title: "Gaming" },
+        {
+          slug: "gaming",
+          emoji: "🎮",
+          title: "Gaming",
+          measures: [{ slug: "duration", unit: "min" }],
+        },
         { slug: "create", emoji: "🎨", title: "Made something" },
         { slug: "chores", emoji: "🧹", title: "Chores" },
         { slug: "outdoors", emoji: "🌳", title: "Went outdoors" },
@@ -106,7 +132,7 @@ const hydration: BundleDef = {
       title: "Drinks",
       emoji: "💧",
       things: [
-        { slug: "water", emoji: "💧", title: "Water" },
+        { slug: "water", emoji: "💧", title: "Water", measures: [{ slug: "volume", unit: "ml" }] },
         { slug: "coffee", emoji: "☕", title: "Coffee" },
         { slug: "tea", emoji: "🍵", title: "Tea" },
         { slug: "soft-drink", emoji: "🥤", title: "Soft drink" },
@@ -141,7 +167,12 @@ const health: BundleDef = {
       things: [
         { slug: "headache", emoji: "🤕", title: "Headache" },
         { slug: "unwell", emoji: "🤒", title: "Felt unwell" },
-        { slug: "temperature", emoji: "🌡️", title: "Temperature" },
+        {
+          slug: "temperature",
+          emoji: "🌡️",
+          title: "Temperature",
+          measures: [{ slug: "temperature", unit: "c" }],
+        },
         { slug: "allergy", emoji: "🤧", title: "Allergy" },
         { slug: "pain", emoji: "🦴", title: "Pain" },
       ],
@@ -152,7 +183,12 @@ const health: BundleDef = {
       emoji: "🩺",
       things: [
         { slug: "appointment", emoji: "🩺", title: "Appointment" },
-        { slug: "weight", emoji: "⚖️", title: "Weighed in" },
+        {
+          slug: "weight",
+          emoji: "⚖️",
+          title: "Weighed in",
+          measures: [{ slug: "weight", unit: "kg" }],
+        },
         { slug: "dental", emoji: "🦷", title: "Dental care" },
       ],
     },
@@ -171,7 +207,12 @@ const focus: BundleDef = {
       title: "Work",
       emoji: "🎯",
       things: [
-        { slug: "deep-work", emoji: "🎯", title: "Deep work" },
+        {
+          slug: "deep-work",
+          emoji: "🎯",
+          title: "Deep work",
+          measures: [{ slug: "duration", unit: "min" }],
+        },
         { slug: "meeting", emoji: "📅", title: "Meeting" },
         { slug: "call", emoji: "📞", title: "Call" },
         { slug: "admin", emoji: "📝", title: "Admin" },
@@ -184,8 +225,18 @@ const focus: BundleDef = {
       title: "Learning",
       emoji: "📚",
       things: [
-        { slug: "study", emoji: "📚", title: "Study" },
-        { slug: "reading", emoji: "📖", title: "Reading" },
+        {
+          slug: "study",
+          emoji: "📚",
+          title: "Study",
+          measures: [{ slug: "duration", unit: "min" }],
+        },
+        {
+          slug: "reading",
+          emoji: "📖",
+          title: "Reading",
+          measures: [{ slug: "duration", unit: "min" }],
+        },
         { slug: "language", emoji: "🗣️", title: "Language practice" },
         { slug: "course", emoji: "🎓", title: "Course" },
       ],
@@ -205,10 +256,20 @@ const screen: BundleDef = {
       title: "Screens",
       emoji: "📱",
       things: [
-        { slug: "phone", emoji: "📱", title: "Phone" },
+        {
+          slug: "phone",
+          emoji: "📱",
+          title: "Phone",
+          measures: [{ slug: "duration", unit: "min" }],
+        },
         { slug: "social", emoji: "💬", title: "Social media" },
-        { slug: "tv", emoji: "📺", title: "TV" },
-        { slug: "gaming", emoji: "🎮", title: "Gaming" },
+        { slug: "tv", emoji: "📺", title: "TV", measures: [{ slug: "duration", unit: "min" }] },
+        {
+          slug: "gaming",
+          emoji: "🎮",
+          title: "Gaming",
+          measures: [{ slug: "duration", unit: "min" }],
+        },
         { slug: "phone-free", emoji: "📵", title: "Phone-free time" },
       ],
     },
@@ -251,7 +312,7 @@ const pets: BundleDef = {
       title: "Pet care",
       emoji: "🐾",
       things: [
-        { slug: "walk", emoji: "🐕", title: "Walk" },
+        { slug: "walk", emoji: "🐕", title: "Walk", measures: [{ slug: "duration", unit: "min" }] },
         { slug: "feed", emoji: "🍖", title: "Fed" },
         { slug: "meds", emoji: "💊", title: "Medication" },
         { slug: "vet", emoji: "🏥", title: "Vet" },

@@ -4,6 +4,11 @@ export type ThingDef = {
   emoji: string;
   title: string;
   description?: string;
+  /**
+   * Measurement slugs this thing records, with an optional preferred unit.
+   * A run is naturally distance and duration; a coffee is neither.
+   */
+  measures?: { slug: string; unit?: string }[];
 };
 
 export type GroupDef = {

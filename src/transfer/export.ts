@@ -3,11 +3,14 @@ import type { AppDatabase } from "@/db/database";
 import {
   EventSchema,
   GroupSchema,
+  MeasurementSchema,
   ThingSchema,
   eventRxSchema,
   groupRxSchema,
+  measurementRxSchema,
   thingRxSchema,
   type Group,
+  type Measurement,
   type Thing,
   type TrackedEvent,
 } from "@/db/schema";
@@ -38,6 +41,23 @@ const cleanThings = (rows: readonly Thing[]): Thing[] => rows.map((row) => Thing
 const cleanGroups = (rows: readonly Group[]): Group[] => rows.map((row) => GroupSchema.parse(row));
 const cleanEvents = (rows: readonly TrackedEvent[]): TrackedEvent[] =>
   rows.map((row) => EventSchema.parse(row));
+const cleanMeasurements = (rows: readonly Measurement[]): Measurement[] =>
+  rows.map((row) => MeasurementSchema.parse(row));
+
+/** Earliest and latest entry in a set, so a file states what it covers. */
+export function eventRange(events: readonly TrackedEvent[]): {
+  from: number | null;
+  to: number | null;
+} {
+  if (events.length === 0) return { from: null, to: null };
+  let from = Infinity;
+  let to = -Infinity;
+  for (const event of events) {
+    if (event.actualAt < from) from = event.actualAt;
+    if (event.actualAt > to) to = event.actualAt;
+  }
+  return { from, to };
+}
 
 /**
  * Builds a shareable pack from a set of tags plus every thing they reference.
@@ -48,6 +68,7 @@ const cleanEvents = (rows: readonly TrackedEvent[]): TrackedEvent[] =>
 export function buildPack(
   groups: readonly Group[],
   allThings: readonly Thing[],
+  allMeasurements: readonly Measurement[] = [],
   bundle?: PackEnvelope["bundle"],
 ): PackEnvelope {
   const byId = new Map(allThings.map((thing) => [thing.id, thing]));
@@ -68,6 +89,13 @@ export function buildPack(
       })),
     ),
     things: cleanThings(things),
+    // Only the scales actually referenced travel with the pack; shipping the
+    // full registry would bloat every share with things nobody used.
+    measurements: cleanMeasurements(
+      allMeasurements.filter((measurement) =>
+        things.some((thing) => thing.measurements.some((m) => m.measurementId === measurement.id)),
+      ),
+    ),
   };
 }
 
@@ -87,6 +115,7 @@ export async function buildBackup(
   const things = cleanThings(collections.things.toArray);
   const groups = cleanGroups(collections.groups.toArray);
   const events = cleanEvents(collections.events.toArray);
+  const measurements = cleanMeasurements(collections.measurements.toArray);
 
   const attachments: BackupEnvelope["attachments"] = [];
   let totalBytes = 0;
@@ -123,6 +152,7 @@ export async function buildBackup(
       things: thingRxSchema.version,
       groups: groupRxSchema.version,
       events: eventRxSchema.version,
+      measurements: measurementRxSchema.version,
     },
     counts: {
       things: things.length,
@@ -133,6 +163,10 @@ export async function buildBackup(
     things,
     groups,
     events,
+    measurements,
+    // States the span the file covers, so its usefulness is obvious without
+    // opening it — and so a restore can say what period it is about to add.
+    range: eventRange(events),
     // Never silently: if media was dropped, the envelope says so and the UI
     // repeats it, because a backup you think is complete is worse than none.
     attachments: omitted ? [] : attachments,
@@ -145,12 +179,23 @@ export function packFilename(groups: readonly Group[], bundleId?: string): strin
   return `thing-tracker-pack-${slug}-${isoDate()}.json`;
 }
 
-export function backupFilename(): string {
+/**
+ * Includes the covered period, so a folder of backups is readable at a glance
+ * and picking the right one doesn't mean opening each in turn.
+ */
+export function backupFilename(range?: { from: number | null; to: number | null }): string {
+  if (range?.from != null && range.to != null) {
+    return `thing-tracker-backup-${isoDateOf(range.from)}_to_${isoDateOf(range.to)}.json`;
+  }
   return `thing-tracker-backup-${isoDate()}.json`;
 }
 
 function isoDate(): string {
-  const d = new Date();
+  return isoDateOf(Date.now());
+}
+
+function isoDateOf(ts: number): string {
+  const d = new Date(ts);
   return `${String(d.getFullYear())}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
 

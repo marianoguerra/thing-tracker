@@ -10,13 +10,17 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import { Checkbox } from "@/components/ui/checkbox";
+import { useLiveQuery } from "@tanstack/react-db";
+
+import {
+  MeasurementPicker,
+  type ThingMeasurementDraft,
+} from "@/components/measure/MeasurementPicker";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useCollections } from "@/db/provider";
 import type { Thing } from "@/db/schema";
-import { DURATION_UNITS, type DurationUnit } from "@/lib/duration";
-import { cn } from "@/lib/utils";
 
 const DEFAULT_EMOJI = "⭐";
 
@@ -26,7 +30,7 @@ export type ThingDraftValues = {
   emoji: string;
   title: string;
   description?: string;
-  duration?: { defaultUnit: DurationUnit };
+  measurements: ThingMeasurementDraft[];
 };
 
 type Props = {
@@ -43,8 +47,10 @@ export function ThingEditorDrawer({ state, onClose, onSave, onDelete, siblingEmo
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [pickerOpen, setPickerOpen] = useState(false);
-  const [tracksDuration, setTracksDuration] = useState(false);
-  const [durationUnit, setDurationUnit] = useState<DurationUnit>("minutes");
+  const [measurements, setMeasurements] = useState<ThingMeasurementDraft[]>([]);
+
+  const { measurements: measurementCollection } = useCollections();
+  const { data: available } = useLiveQuery((q) => q.from({ measurement: measurementCollection }));
 
   useEffect(() => {
     if (!state) return;
@@ -52,14 +58,12 @@ export function ThingEditorDrawer({ state, onClose, onSave, onDelete, siblingEmo
       setEmoji(state.thing.emoji);
       setTitle(state.thing.title);
       setDescription(state.thing.description ?? "");
-      setTracksDuration(state.thing.duration !== undefined);
-      setDurationUnit(state.thing.duration?.defaultUnit ?? "minutes");
+      setMeasurements(state.thing.measurements.map((m) => ({ ...m })));
     } else {
       setEmoji(DEFAULT_EMOJI);
       setTitle(state.title ?? "");
       setDescription("");
-      setTracksDuration(false);
-      setDurationUnit("minutes");
+      setMeasurements([]);
     }
     setPickerOpen(state.mode === "create");
   }, [state]);
@@ -124,46 +128,17 @@ export function ThingEditorDrawer({ state, onClose, onSave, onDelete, siblingEmo
             />
           )}
 
-          <div className="space-y-2">
-            <div className="flex items-start gap-2">
-              <Checkbox
-                id="thing-duration"
-                checked={tracksDuration}
-                onCheckedChange={(next) => setTracksDuration(next === true)}
-              />
-              <div className="grid gap-1">
-                <Label htmlFor="thing-duration" className="text-sm font-normal">
-                  Track how long it lasts
-                </Label>
-                <p className="text-muted-foreground text-xs">
-                  Tapping this thing will ask for a duration, pre-filled with last time&apos;s.
-                </p>
-              </div>
-            </div>
-
-            {tracksDuration && (
-              <div className="pl-6">
-                <Label className="text-muted-foreground text-xs">Usually measured in</Label>
-                <div className="mt-1 flex gap-1.5">
-                  {DURATION_UNITS.map((unit) => (
-                    <button
-                      key={unit}
-                      type="button"
-                      onClick={() => setDurationUnit(unit)}
-                      aria-pressed={durationUnit === unit}
-                      className={cn(
-                        "rounded-full border px-3 py-1 text-xs font-medium capitalize",
-                        durationUnit === unit
-                          ? "bg-primary text-primary-foreground border-transparent"
-                          : "border-border text-muted-foreground",
-                      )}
-                    >
-                      {unit}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
+          <div className="space-y-1.5">
+            <Label>Record a value when logging</Label>
+            <p className="text-muted-foreground text-xs">
+              Leave all unticked and one tap logs it outright. Tick any and tapping asks for them
+              first, pre-filled with last time&apos;s.
+            </p>
+            <MeasurementPicker
+              measurements={available}
+              value={measurements}
+              onChange={setMeasurements}
+            />
           </div>
 
           <div className="space-y-1.5">
@@ -186,7 +161,7 @@ export function ThingEditorDrawer({ state, onClose, onSave, onDelete, siblingEmo
                 emoji,
                 title: title.trim(),
                 description: description.trim() || undefined,
-                duration: tracksDuration ? { defaultUnit: durationUnit } : undefined,
+                measurements,
               });
             }}
           >

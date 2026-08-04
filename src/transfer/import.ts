@@ -9,6 +9,7 @@ export function snapshot(collections: AppCollectionsCtx): LocalSnapshot {
     things: [...collections.things.toArray],
     groups: [...collections.groups.toArray],
     events: [...collections.events.toArray],
+    measurements: [...collections.measurements.toArray],
   };
 }
 
@@ -36,7 +37,13 @@ export async function applyImport(
     await db.events.find().remove();
     await db.groups.find().remove();
     await db.things.find().remove();
+    // Measurements are deliberately kept: the predefined ones are re-seeded on
+    // every open anyway, and wiping them would orphan the incoming values.
   }
+
+  // Measurements first: a thing that references a scale is meaningless until
+  // the scale exists.
+  if (plan.measurements.create.length) collections.measurements.insert(plan.measurements.create);
 
   if (plan.things.create.length) collections.things.insert(plan.things.create);
   for (const thing of plan.things.update) {

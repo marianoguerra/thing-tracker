@@ -38,6 +38,7 @@
       "emoji": "🤩",
       "title": "Great",
       "archived": false,
+      "measurements": [],
       "bundleId": "mood",
       "createdAt": 0,
       "updatedAt": 0
@@ -47,6 +48,7 @@
       "emoji": "😊",
       "title": "Happy",
       "archived": false,
+      "measurements": [],
       "bundleId": "mood",
       "createdAt": 0,
       "updatedAt": 0
@@ -56,6 +58,7 @@
       "emoji": "😌",
       "title": "Calm",
       "archived": false,
+      "measurements": [],
       "bundleId": "mood",
       "createdAt": 0,
       "updatedAt": 0
@@ -65,6 +68,7 @@
       "emoji": "🙂",
       "title": "Okay",
       "archived": false,
+      "measurements": [],
       "bundleId": "mood",
       "createdAt": 0,
       "updatedAt": 0
@@ -74,6 +78,7 @@
       "emoji": "😐",
       "title": "Meh",
       "archived": false,
+      "measurements": [],
       "bundleId": "mood",
       "createdAt": 0,
       "updatedAt": 0
@@ -83,6 +88,7 @@
       "emoji": "🥱",
       "title": "Tired",
       "archived": false,
+      "measurements": [],
       "bundleId": "mood",
       "createdAt": 0,
       "updatedAt": 0
@@ -92,6 +98,7 @@
       "emoji": "😰",
       "title": "Anxious",
       "archived": false,
+      "measurements": [],
       "bundleId": "mood",
       "createdAt": 0,
       "updatedAt": 0
@@ -101,6 +108,7 @@
       "emoji": "😔",
       "title": "Low",
       "archived": false,
+      "measurements": [],
       "bundleId": "mood",
       "createdAt": 0,
       "updatedAt": 0
@@ -110,6 +118,7 @@
       "emoji": "😠",
       "title": "Angry",
       "archived": false,
+      "measurements": [],
       "bundleId": "mood",
       "createdAt": 0,
       "updatedAt": 0
@@ -119,9 +128,11 @@
       "emoji": "🫠",
       "title": "Overwhelmed",
       "archived": false,
+      "measurements": [],
       "bundleId": "mood",
       "createdAt": 0,
       "updatedAt": 0
     }
-  ]
+  ],
+  "measurements": []
 }

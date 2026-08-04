@@ -83,6 +83,7 @@
       "emoji": "🥣",
       "title": "Breakfast",
       "archived": false,
+      "measurements": [],
       "bundleId": "habits",
       "createdAt": 0,
       "updatedAt": 0
@@ -92,6 +93,7 @@
       "emoji": "🥗",
       "title": "Lunch",
       "archived": false,
+      "measurements": [],
       "bundleId": "habits",
       "createdAt": 0,
       "updatedAt": 0
@@ -101,6 +103,7 @@
       "emoji": "🍽️",
       "title": "Dinner",
       "archived": false,
+      "measurements": [],
       "bundleId": "habits",
       "createdAt": 0,
       "updatedAt": 0
@@ -110,6 +113,7 @@
       "emoji": "🍪",
       "title": "Snack",
       "archived": false,
+      "measurements": [],
       "bundleId": "habits",
       "createdAt": 0,
       "updatedAt": 0
@@ -119,6 +123,7 @@
       "emoji": "🥡",
       "title": "Takeaway",
       "archived": false,
+      "measurements": [],
       "bundleId": "habits",
       "createdAt": 0,
       "updatedAt": 0
@@ -128,6 +133,7 @@
       "emoji": "🍫",
       "title": "Something sweet",
       "archived": false,
+      "measurements": [],
       "bundleId": "habits",
       "createdAt": 0,
       "updatedAt": 0
@@ -137,6 +143,16 @@
       "emoji": "🏃",
       "title": "Run",
       "archived": false,
+      "measurements": [
+        {
+          "measurementId": "90d71179-79a7-51f9-9673-d870df01ee62",
+          "unit": "km"
+        },
+        {
+          "measurementId": "696604f4-05a0-5f3e-a9d3-da5c0efc867c",
+          "unit": "min"
+        }
+      ],
       "bundleId": "habits",
       "createdAt": 0,
       "updatedAt": 0
@@ -146,6 +162,12 @@
       "emoji": "🚶",
       "title": "Walk",
       "archived": false,
+      "measurements": [
+        {
+          "measurementId": "696604f4-05a0-5f3e-a9d3-da5c0efc867c",
+          "unit": "min"
+        }
+      ],
       "bundleId": "habits",
       "createdAt": 0,
       "updatedAt": 0
@@ -155,6 +177,12 @@
       "emoji": "🏋️",
       "title": "Gym",
       "archived": false,
+      "measurements": [
+        {
+          "measurementId": "696604f4-05a0-5f3e-a9d3-da5c0efc867c",
+          "unit": "min"
+        }
+      ],
       "bundleId": "habits",
       "createdAt": 0,
       "updatedAt": 0
@@ -164,6 +192,12 @@
       "emoji": "🧘",
       "title": "Yoga",
       "archived": false,
+      "measurements": [
+        {
+          "measurementId": "696604f4-05a0-5f3e-a9d3-da5c0efc867c",
+          "unit": "min"
+        }
+      ],
       "bundleId": "habits",
       "createdAt": 0,
       "updatedAt": 0
@@ -173,6 +207,16 @@
       "emoji": "🚴",
       "title": "Cycle",
       "archived": false,
+      "measurements": [
+        {
+          "measurementId": "90d71179-79a7-51f9-9673-d870df01ee62",
+          "unit": "km"
+        },
+        {
+          "measurementId": "696604f4-05a0-5f3e-a9d3-da5c0efc867c",
+          "unit": "min"
+        }
+      ],
       "bundleId": "habits",
       "createdAt": 0,
       "updatedAt": 0
@@ -182,6 +226,12 @@
       "emoji": "🤸",
       "title": "Stretch",
       "archived": false,
+      "measurements": [
+        {
+          "measurementId": "696604f4-05a0-5f3e-a9d3-da5c0efc867c",
+          "unit": "min"
+        }
+      ],
       "bundleId": "habits",
       "createdAt": 0,
       "updatedAt": 0
@@ -191,6 +241,7 @@
       "emoji": "🛏️",
       "title": "Went to bed",
       "archived": false,
+      "measurements": [],
       "bundleId": "habits",
       "createdAt": 0,
       "updatedAt": 0
@@ -200,6 +251,7 @@
       "emoji": "🌅",
       "title": "Woke up",
       "archived": false,
+      "measurements": [],
       "bundleId": "habits",
       "createdAt": 0,
       "updatedAt": 0
@@ -209,6 +261,12 @@
       "emoji": "💤",
       "title": "Nap",
       "archived": false,
+      "measurements": [
+        {
+          "measurementId": "696604f4-05a0-5f3e-a9d3-da5c0efc867c",
+          "unit": "min"
+        }
+      ],
       "bundleId": "habits",
       "createdAt": 0,
       "updatedAt": 0
@@ -218,6 +276,7 @@
       "emoji": "🌙",
       "title": "Woke in the night",
       "archived": false,
+      "measurements": [],
       "bundleId": "habits",
       "createdAt": 0,
       "updatedAt": 0
@@ -227,6 +286,7 @@
       "emoji": "📖",
       "title": "Read",
       "archived": false,
+      "measurements": [],
       "bundleId": "habits",
       "createdAt": 0,
       "updatedAt": 0
@@ -236,6 +296,7 @@
       "emoji": "🎸",
       "title": "Practised music",
       "archived": false,
+      "measurements": [],
       "bundleId": "habits",
       "createdAt": 0,
       "updatedAt": 0
@@ -245,6 +306,12 @@
       "emoji": "🎮",
       "title": "Gaming",
       "archived": false,
+      "measurements": [
+        {
+          "measurementId": "696604f4-05a0-5f3e-a9d3-da5c0efc867c",
+          "unit": "min"
+        }
+      ],
       "bundleId": "habits",
       "createdAt": 0,
       "updatedAt": 0
@@ -254,6 +321,7 @@
       "emoji": "🎨",
       "title": "Made something",
       "archived": false,
+      "measurements": [],
       "bundleId": "habits",
       "createdAt": 0,
       "updatedAt": 0
@@ -263,6 +331,7 @@
       "emoji": "🧹",
       "title": "Chores",
       "archived": false,
+      "measurements": [],
       "bundleId": "habits",
       "createdAt": 0,
       "updatedAt": 0
@@ -272,7 +341,136 @@
       "emoji": "🌳",
       "title": "Went outdoors",
       "archived": false,
+      "measurements": [],
       "bundleId": "habits",
+      "createdAt": 0,
+      "updatedAt": 0
+    }
+  ],
+  "measurements": [
+    {
+      "id": "696604f4-05a0-5f3e-a9d3-da5c0efc867c",
+      "name": "Duration",
+      "emoji": "⏱️",
+      "baseUnit": "ms",
+      "defaultUnit": "min",
+      "units": [
+        {
+          "id": "ms",
+          "label": "milliseconds",
+          "symbol": "ms",
+          "factor": 1,
+          "precision": 0
+        },
+        {
+          "id": "s",
+          "label": "seconds",
+          "symbol": "s",
+          "factor": 1000,
+          "precision": 0
+        },
+        {
+          "id": "min",
+          "label": "minutes",
+          "symbol": "m",
+          "factor": 60000,
+          "precision": 0
+        },
+        {
+          "id": "h",
+          "label": "hours",
+          "symbol": "h",
+          "factor": 3600000,
+          "precision": 2
+        },
+        {
+          "id": "d",
+          "label": "days",
+          "symbol": "d",
+          "factor": 86400000,
+          "precision": 2
+        }
+      ],
+      "steps": [
+        1,
+        5,
+        10,
+        15,
+        30,
+        60
+      ],
+      "stepUnit": "min",
+      "builtinId": "duration",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "90d71179-79a7-51f9-9673-d870df01ee62",
+      "name": "Distance",
+      "emoji": "📏",
+      "baseUnit": "m",
+      "defaultUnit": "km",
+      "units": [
+        {
+          "id": "cm",
+          "label": "centimetres",
+          "symbol": "cm",
+          "factor": 0.01,
+          "precision": 1
+        },
+        {
+          "id": "m",
+          "label": "metres",
+          "symbol": "m",
+          "factor": 1,
+          "precision": 1
+        },
+        {
+          "id": "km",
+          "label": "kilometres",
+          "symbol": "km",
+          "factor": 1000,
+          "precision": 2
+        },
+        {
+          "id": "in",
+          "label": "inches",
+          "symbol": "in",
+          "factor": 0.0254,
+          "precision": 1
+        },
+        {
+          "id": "ft",
+          "label": "feet",
+          "symbol": "ft",
+          "factor": 0.3048,
+          "precision": 1
+        },
+        {
+          "id": "yd",
+          "label": "yards",
+          "symbol": "yd",
+          "factor": 0.9144,
+          "precision": 1
+        },
+        {
+          "id": "mi",
+          "label": "miles",
+          "symbol": "mi",
+          "factor": 1609.344,
+          "precision": 2
+        }
+      ],
+      "steps": [
+        0.1,
+        0.5,
+        1,
+        2,
+        5,
+        10
+      ],
+      "stepUnit": "km",
+      "builtinId": "distance",
       "createdAt": 0,
       "updatedAt": 0
     }

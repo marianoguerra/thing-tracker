@@ -7,6 +7,8 @@ import { v5 as uuidv5 } from "uuid";
 import type { Group, Thing } from "../db/schema/index.ts";
 import type { PackEnvelope } from "../transfer/envelope.ts";
 import { PACK_FORMAT } from "../transfer/format.ts";
+import { MEASUREMENT_DEFS } from "../measurements/definitions.ts";
+import { measurementId, toMeasurement } from "../measurements/ids.ts";
 import { BUNDLE_NAMESPACE, groupIdName, thingIdName } from "./ids.ts";
 import type { BundleDef } from "./types.ts";
 
@@ -29,6 +31,7 @@ export function buildBundle(def: BundleDef): BuiltBundle {
   const things: Thing[] = [];
   const seenThingIds = new Set<string>();
   const groups: Group[] = [];
+  const usedMeasurementSlugs = new Set<string>();
 
   for (const [index, groupDef] of def.groups.entries()) {
     const thingIds: string[] = [];
@@ -46,6 +49,13 @@ export function buildBundle(def: BundleDef): BuiltBundle {
         title: thingDef.title,
         ...(thingDef.description ? { description: thingDef.description } : {}),
         archived: false,
+        measurements: (thingDef.measures ?? []).map((measure) => {
+          usedMeasurementSlugs.add(measure.slug);
+          return {
+            measurementId: measurementId(measure.slug),
+            ...(measure.unit ? { unit: measure.unit } : {}),
+          };
+        }),
         bundleId: def.slug,
         createdAt: BUNDLE_EPOCH,
         updatedAt: BUNDLE_EPOCH,
@@ -81,6 +91,12 @@ export function buildBundle(def: BundleDef): BuiltBundle {
       },
       groups,
       things,
+      // The scales the things reference travel with the pack, so a recipient
+      // gets a usable thing rather than a value with no units. Ids are shared,
+      // so anyone who already has them simply matches.
+      measurements: MEASUREMENT_DEFS.filter((def) => usedMeasurementSlugs.has(def.slug)).map(
+        toMeasurement,
+      ),
     },
   };
 }

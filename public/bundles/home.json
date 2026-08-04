@@ -35,6 +35,7 @@
       "emoji": "🍴",
       "title": "Dishes",
       "archived": false,
+      "measurements": [],
       "bundleId": "home",
       "createdAt": 0,
       "updatedAt": 0
@@ -44,6 +45,7 @@
       "emoji": "🧺",
       "title": "Laundry",
       "archived": false,
+      "measurements": [],
       "bundleId": "home",
       "createdAt": 0,
       "updatedAt": 0
@@ -53,6 +55,7 @@
       "emoji": "🧹",
       "title": "Tidied",
       "archived": false,
+      "measurements": [],
       "bundleId": "home",
       "createdAt": 0,
       "updatedAt": 0
@@ -62,6 +65,7 @@
       "emoji": "🧽",
       "title": "Deep clean",
       "archived": false,
+      "measurements": [],
       "bundleId": "home",
       "createdAt": 0,
       "updatedAt": 0
@@ -71,6 +75,7 @@
       "emoji": "🗑️",
       "title": "Bins out",
       "archived": false,
+      "measurements": [],
       "bundleId": "home",
       "createdAt": 0,
       "updatedAt": 0
@@ -80,6 +85,7 @@
       "emoji": "🛒",
       "title": "Groceries",
       "archived": false,
+      "measurements": [],
       "bundleId": "home",
       "createdAt": 0,
       "updatedAt": 0
@@ -89,9 +95,11 @@
       "emoji": "🪴",
       "title": "Watered plants",
       "archived": false,
+      "measurements": [],
       "bundleId": "home",
       "createdAt": 0,
       "updatedAt": 0
     }
-  ]
+  ],
+  "measurements": []
 }

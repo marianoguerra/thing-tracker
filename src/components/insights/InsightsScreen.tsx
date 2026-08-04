@@ -5,6 +5,7 @@ import { useCollections } from "@/db/provider";
 import type { Thing, TrackedEvent } from "@/db/schema";
 import { bucketEvents, withGaps, type Bucket, type Granularity } from "@/domain/buckets";
 import { groupsByThing } from "@/domain/grouping";
+import { indexMeasurements } from "@/domain/measurements";
 import { BucketRow, formatBucketLabel } from "./BucketRow";
 import { GranularityToggle } from "./GranularityToggle";
 import { EventSheet } from "./EventSheet";
@@ -32,6 +33,10 @@ export function InsightsScreen({
   const { data: events } = useLiveQuery((q) => q.from({ event: collections.events }));
   const { data: things } = useLiveQuery((q) => q.from({ thing: collections.things }));
   const { data: groups } = useLiveQuery((q) => q.from({ group: collections.groups }));
+  const { data: measurementRows } = useLiveQuery((q) =>
+    q.from({ measurement: collections.measurements }),
+  );
+  const measurementById = useMemo(() => indexMeasurements(measurementRows), [measurementRows]);
 
   const thingById = useMemo(() => new Map(things.map((t) => [t.id, t])), [things]);
   const now = useMemo(() => Date.now(), []);
@@ -143,6 +148,7 @@ export function InsightsScreen({
         title={selection.bucket ? formatBucketLabel(selection.bucket.start, granularity, now) : ""}
         thing={selectedThing}
         events={selectedEvents}
+        measurementById={measurementById}
         onClose={() => setSelection({ thingId: null, bucket: null })}
         onEdit={(eventId) => {
           setSelection({ thingId: null, bucket: null });

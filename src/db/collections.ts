@@ -2,7 +2,7 @@ import { count, createCollection, createLiveQueryCollection, max } from "@tansta
 import { rxdbCollectionOptions } from "@tanstack/rxdb-db-collection";
 
 import type { AppDatabase } from "./database";
-import { EventSchema, GroupSchema, ThingSchema } from "./schema";
+import { EventSchema, GroupSchema, MeasurementSchema, ThingSchema } from "./schema";
 
 /**
  * Wraps the RxDB collections as TanStack DB collections.
@@ -30,6 +30,16 @@ export function createAppCollections(db: AppDatabase) {
       schema: GroupSchema,
       startSync: true,
       syncBatchSize: 500,
+    }),
+  );
+
+  const measurements = createCollection(
+    rxdbCollectionOptions({
+      id: "measurements",
+      rxCollection: db.measurements,
+      schema: MeasurementSchema,
+      startSync: true,
+      syncBatchSize: 100,
     }),
   );
 
@@ -65,7 +75,7 @@ export function createAppCollections(db: AppDatabase) {
         })),
   });
 
-  return { things, groups, events, usageByThing };
+  return { things, groups, events, measurements, usageByThing };
 }
 
 export type AppCollectionsCtx = ReturnType<typeof createAppCollections>;

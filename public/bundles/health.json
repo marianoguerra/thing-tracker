@@ -61,6 +61,7 @@
       "emoji": "💊",
       "title": "Took medication",
       "archived": false,
+      "measurements": [],
       "bundleId": "health",
       "createdAt": 0,
       "updatedAt": 0
@@ -70,6 +71,7 @@
       "emoji": "❗",
       "title": "Missed a dose",
       "archived": false,
+      "measurements": [],
       "bundleId": "health",
       "createdAt": 0,
       "updatedAt": 0
@@ -79,6 +81,7 @@
       "emoji": "💉",
       "title": "Injection",
       "archived": false,
+      "measurements": [],
       "bundleId": "health",
       "createdAt": 0,
       "updatedAt": 0
@@ -88,6 +91,7 @@
       "emoji": "🤕",
       "title": "Headache",
       "archived": false,
+      "measurements": [],
       "bundleId": "health",
       "createdAt": 0,
       "updatedAt": 0
@@ -97,6 +101,7 @@
       "emoji": "🤒",
       "title": "Felt unwell",
       "archived": false,
+      "measurements": [],
       "bundleId": "health",
       "createdAt": 0,
       "updatedAt": 0
@@ -106,6 +111,12 @@
       "emoji": "🌡️",
       "title": "Temperature",
       "archived": false,
+      "measurements": [
+        {
+          "measurementId": "33d2801a-3149-5995-8089-f5ef864b4559",
+          "unit": "c"
+        }
+      ],
       "bundleId": "health",
       "createdAt": 0,
       "updatedAt": 0
@@ -115,6 +126,7 @@
       "emoji": "🤧",
       "title": "Allergy",
       "archived": false,
+      "measurements": [],
       "bundleId": "health",
       "createdAt": 0,
       "updatedAt": 0
@@ -124,6 +136,7 @@
       "emoji": "🦴",
       "title": "Pain",
       "archived": false,
+      "measurements": [],
       "bundleId": "health",
       "createdAt": 0,
       "updatedAt": 0
@@ -133,6 +146,7 @@
       "emoji": "🩺",
       "title": "Appointment",
       "archived": false,
+      "measurements": [],
       "bundleId": "health",
       "createdAt": 0,
       "updatedAt": 0
@@ -142,6 +156,12 @@
       "emoji": "⚖️",
       "title": "Weighed in",
       "archived": false,
+      "measurements": [
+        {
+          "measurementId": "3ae9dbd5-480b-5e04-b9d1-7f50c8283937",
+          "unit": "kg"
+        }
+      ],
       "bundleId": "health",
       "createdAt": 0,
       "updatedAt": 0
@@ -151,7 +171,108 @@
       "emoji": "🦷",
       "title": "Dental care",
       "archived": false,
+      "measurements": [],
       "bundleId": "health",
+      "createdAt": 0,
+      "updatedAt": 0
+    }
+  ],
+  "measurements": [
+    {
+      "id": "3ae9dbd5-480b-5e04-b9d1-7f50c8283937",
+      "name": "Weight",
+      "emoji": "⚖️",
+      "baseUnit": "g",
+      "defaultUnit": "kg",
+      "units": [
+        {
+          "id": "g",
+          "label": "grams",
+          "symbol": "g",
+          "factor": 1,
+          "precision": 0
+        },
+        {
+          "id": "kg",
+          "label": "kilograms",
+          "symbol": "kg",
+          "factor": 1000,
+          "precision": 2
+        },
+        {
+          "id": "oz",
+          "label": "ounces",
+          "symbol": "oz",
+          "factor": 28.349523125,
+          "precision": 1
+        },
+        {
+          "id": "lb",
+          "label": "pounds",
+          "symbol": "lb",
+          "factor": 453.59237,
+          "precision": 2
+        },
+        {
+          "id": "st",
+          "label": "stone",
+          "symbol": "st",
+          "factor": 6350.29318,
+          "precision": 2
+        }
+      ],
+      "steps": [
+        0.1,
+        0.5,
+        1,
+        2,
+        5,
+        10
+      ],
+      "stepUnit": "kg",
+      "builtinId": "weight",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "33d2801a-3149-5995-8089-f5ef864b4559",
+      "name": "Temperature",
+      "emoji": "🌡️",
+      "baseUnit": "c",
+      "defaultUnit": "c",
+      "units": [
+        {
+          "id": "c",
+          "label": "Celsius",
+          "symbol": "°C",
+          "factor": 1,
+          "precision": 1
+        },
+        {
+          "id": "f",
+          "label": "Fahrenheit",
+          "symbol": "°F",
+          "factor": 0.5555555555555556,
+          "offset": -17.77777777777778,
+          "precision": 1
+        },
+        {
+          "id": "k",
+          "label": "Kelvin",
+          "symbol": "K",
+          "factor": 1,
+          "offset": -273.15,
+          "precision": 1
+        }
+      ],
+      "steps": [
+        0.1,
+        0.5,
+        1,
+        5
+      ],
+      "stepUnit": "c",
+      "builtinId": "temperature",
       "createdAt": 0,
       "updatedAt": 0
     }

@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { EventSchema, GroupSchema, ThingSchema } from "@/db/schema";
+import { EventSchema, GroupSchema, MeasurementSchema, ThingSchema } from "@/db/schema";
 import { Timestamp } from "@/db/schema/primitives";
 import { BACKUP_FORMAT, ENVELOPE_VERSION, PACK_FORMAT } from "./format";
 
@@ -30,6 +30,13 @@ export const PackEnvelopeSchema = z.object({
   bundle: BundleMetaSchema.optional(),
   groups: z.array(GroupSchema),
   things: z.array(ThingSchema),
+  /**
+   * The scales the things reference. Travelling with the pack means a recipient
+   * who has never seen a custom measurement still gets a usable thing rather
+   * than a value with no units — and shared ids mean predefined ones simply
+   * match what they already have.
+   */
+  measurements: z.array(MeasurementSchema).default([]),
 });
 
 export type PackEnvelope = z.infer<typeof PackEnvelopeSchema>;
@@ -51,6 +58,7 @@ export const BackupEnvelopeSchema = z.object({
     things: z.number(),
     groups: z.number(),
     events: z.number(),
+    measurements: z.number().optional(),
   }),
   counts: z.object({
     things: z.number(),
@@ -61,6 +69,9 @@ export const BackupEnvelopeSchema = z.object({
   things: z.array(ThingSchema),
   groups: z.array(GroupSchema),
   events: z.array(EventSchema),
+  measurements: z.array(MeasurementSchema).default([]),
+  /** Earliest and latest entry the file covers; null when it holds none. */
+  range: z.object({ from: z.number().nullable(), to: z.number().nullable() }).optional(),
   /** Always present, empty when there are none, so readers never branch. */
   attachments: z.array(AttachmentPayloadSchema),
   /** Set when attachments were skipped for size; the UI must say so. */

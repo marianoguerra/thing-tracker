@@ -9,6 +9,7 @@ import { useCollections } from "@/db/provider";
 import type { Thing } from "@/db/schema";
 import { deleteEvent, updateEvent } from "@/domain/events";
 import { groupsByThing } from "@/domain/grouping";
+import { indexMeasurements } from "@/domain/measurements";
 import { createThing, deleteThing, updateThing } from "@/domain/things";
 
 export const Route = createFileRoute("/_tabs/")({ component: TrackRoute });
@@ -21,6 +22,10 @@ function TrackRoute() {
   const { data: events } = useLiveQuery((q) => q.from({ event: collections.events }));
   const { data: things } = useLiveQuery((q) => q.from({ thing: collections.things }));
   const { data: groups } = useLiveQuery((q) => q.from({ group: collections.groups }));
+  const { data: measurements } = useLiveQuery((q) =>
+    q.from({ measurement: collections.measurements }),
+  );
+  const measurementById = useMemo(() => indexMeasurements(measurements), [measurements]);
 
   const editingEvent = useMemo(
     () => events.find((event) => event.id === editingEventId) ?? null,
@@ -67,9 +72,7 @@ function TrackRoute() {
         onClose={() => setThingEditor(null)}
         onSave={(draft) => {
           if (thingEditor?.mode === "edit") {
-            updateThing(collections, thingEditor.thing.id, draft, {
-              clearDuration: draft.duration === undefined,
-            });
+            updateThing(collections, thingEditor.thing.id, draft);
           } else {
             createThing(collections, draft);
           }
@@ -84,6 +87,7 @@ function TrackRoute() {
       <EventEditorDrawer
         event={editingEvent}
         thing={editingThing}
+        measurementById={measurementById}
         onClose={() => setEditingEventId(null)}
         onSave={(patch) => {
           if (editingEventId) updateEvent(collections, editingEventId, patch);

@@ -9,8 +9,8 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import type { Thing, TrackedEvent } from "@/db/schema";
-import { formatDuration } from "@/lib/duration";
+import type { Measurement, Thing, TrackedEvent } from "@/db/schema";
+import { formatMeasurement } from "@/lib/measure/format";
 import { formatTime } from "@/lib/time";
 
 type Props = {
@@ -21,10 +21,20 @@ type Props = {
   onClose: () => void;
   onEdit: (eventId: string) => void;
   onDelete: (eventId: string) => void;
+  measurementById: Map<string, Measurement>;
 };
 
 /** The plain chronological list, reached by drilling into an emoji chip. */
-export function EventSheet({ open, title, thing, events, onClose, onEdit, onDelete }: Props) {
+export function EventSheet({
+  open,
+  title,
+  thing,
+  events,
+  onClose,
+  onEdit,
+  onDelete,
+  measurementById,
+}: Props) {
   return (
     <Drawer open={open} onOpenChange={(next) => !next && onClose()}>
       <DrawerContent className="max-h-[80vh]">
@@ -55,12 +65,16 @@ export function EventSheet({ open, title, thing, events, onClose, onEdit, onDele
                     month: "short",
                   })}{" "}
                   · {formatTime(event.actualAt)}
-                  {event.durationMs !== undefined && (
-                    <span className="text-muted-foreground">
-                      {" "}
-                      · {formatDuration(event.durationMs)}
-                    </span>
-                  )}
+                  {event.measurements.map((m) => {
+                    const measurement = measurementById.get(m.measurementId);
+                    if (!measurement) return null;
+                    return (
+                      <span key={m.measurementId} className="text-muted-foreground">
+                        {" "}
+                        · {formatMeasurement(measurement, m.value)}
+                      </span>
+                    );
+                  })}
                 </div>
                 {event.notes && (
                   <div className="text-muted-foreground truncate text-xs">{event.notes}</div>

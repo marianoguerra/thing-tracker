@@ -9,6 +9,7 @@ import { DataPanel } from "@/components/manage/DataPanel";
 import { GroupEditorDrawer, type GroupEditorState } from "@/components/manage/GroupEditorDrawer";
 import { GroupsPanel } from "@/components/manage/GroupsPanel";
 import { ImportPreviewDialog } from "@/components/manage/ImportPreviewDialog";
+import { MeasurementsPanel } from "@/components/manage/MeasurementsPanel";
 import { ThingsPanel } from "@/components/manage/ThingsPanel";
 import { useImportFlow } from "@/components/manage/useImportFlow";
 import { ThingEditorDrawer, type ThingEditorState } from "@/components/thing/ThingEditorDrawer";
@@ -21,10 +22,12 @@ import { cn } from "@/lib/utils";
 import { fetchBundlePack } from "@/transfer/bundles";
 import { buildPack, packFilename } from "@/transfer/export";
 
-export const MANAGE_TABS = ["things", "groups", "bundles", "data"] as const;
+export const MANAGE_TABS = ["things", "groups", "units", "bundles", "data"] as const;
+// Short labels: five tabs have to fit a narrow phone without wrapping.
 const LABELS: Record<(typeof MANAGE_TABS)[number], string> = {
   things: "Things",
   groups: "Tags",
+  units: "Units",
   bundles: "Bundles",
   data: "Data",
 };
@@ -50,6 +53,9 @@ function ManageRoute() {
 
   // Only `things` is needed here — each panel runs its own query for the rest.
   const { data: things } = useLiveQuery((q) => q.from({ thing: collections.things }));
+  const { data: measurements } = useLiveQuery((q) =>
+    q.from({ measurement: collections.measurements }),
+  );
 
   const installedBundleIds = useMemo(
     () => new Set(things.map((thing) => thing.bundleId).filter((id): id is string => !!id)),
@@ -57,7 +63,7 @@ function ManageRoute() {
   );
 
   async function shareGroup(group: Group) {
-    const pack = buildPack([group], things);
+    const pack = buildPack([group], things, measurements);
     await saveOrShare(JSON.stringify(pack, null, 2), packFilename([group]));
   }
 
@@ -74,7 +80,7 @@ function ManageRoute() {
                 void navigate({ search: { tab: name }, replace: true });
               }}
               className={cn(
-                "flex-1 rounded-md px-2 py-1.5 transition-colors",
+                "flex-1 rounded-md px-1.5 py-1.5 text-xs transition-colors sm:text-sm",
                 tab === name ? "bg-background text-foreground shadow-sm" : "text-muted-foreground",
               )}
             >
@@ -98,6 +104,8 @@ function ManageRoute() {
           onShare={(group) => void shareGroup(group)}
         />
       )}
+
+      {tab === "units" && <MeasurementsPanel />}
 
       {tab === "bundles" && (
         <BundleBrowser
@@ -123,9 +131,7 @@ function ManageRoute() {
         onClose={() => setThingEditor(null)}
         onSave={(draft) => {
           if (thingEditor?.mode === "edit") {
-            updateThing(collections, thingEditor.thing.id, draft, {
-              clearDuration: draft.duration === undefined,
-            });
+            updateThing(collections, thingEditor.thing.id, draft);
           } else {
             createThing(collections, draft);
           }

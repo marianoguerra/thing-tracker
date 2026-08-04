@@ -1,4 +1,4 @@
-import type { Group, Thing, TrackedEvent } from "@/db/schema";
+import type { Group, Measurement, Thing, TrackedEvent } from "@/db/schema";
 import type { BackupEnvelope, PackEnvelope } from "./envelope";
 
 /** A snapshot of local state. Pure input — planning never touches the store. */
@@ -6,6 +6,7 @@ export type LocalSnapshot = {
   things: readonly Thing[];
   groups: readonly Group[];
   events: readonly TrackedEvent[];
+  measurements: readonly Measurement[];
 };
 
 export type GroupMerge = { id: string; title: string; addedThingIds: string[] };
@@ -23,6 +24,8 @@ export type ImportPlan = {
     unchanged: Group[];
   };
   events: { create: TrackedEvent[]; skipped: number };
+  /** Scales the file introduces that this device doesn't have yet. */
+  measurements: { create: Measurement[] };
   warnings: string[];
 };
 
@@ -32,6 +35,7 @@ const emptyPlan = (kind: ImportPlan["kind"], mode: ImportPlan["mode"]): ImportPl
   things: { create: [], update: [], unchanged: [] },
   groups: { create: [], replace: [], mergeInto: [], unchanged: [] },
   events: { create: [], skipped: 0 },
+  measurements: { create: [] },
   warnings: [],
 });
 
@@ -63,6 +67,13 @@ export function planPackImport(
 
   const localThings = new Map(local.things.map((thing) => [thing.id, thing]));
   const localGroups = new Map(local.groups.map((group) => [group.id, group]));
+  const localMeasurementIds = new Set(local.measurements.map((m) => m.id));
+
+  // Ids are shared, so a predefined scale the recipient already has simply
+  // matches; only genuinely new ones are created.
+  for (const incoming of pack.measurements) {
+    if (!localMeasurementIds.has(incoming.id)) plan.measurements.create.push(incoming);
+  }
 
   for (const incoming of pack.things) {
     const existing = localThings.get(incoming.id);
@@ -136,6 +147,11 @@ export function planBackupImport(
 ): ImportPlan {
   const plan = emptyPlan("backup", mode);
 
+  const localMeasurementIds = new Set(local.measurements.map((m) => m.id));
+  for (const incoming of backup.measurements) {
+    if (!localMeasurementIds.has(incoming.id)) plan.measurements.create.push(incoming);
+  }
+
   if (mode === "replace") {
     plan.things.create.push(...backup.things);
     plan.groups.create.push(...backup.groups);
@@ -198,7 +214,8 @@ export function isNoopPlan(plan: ImportPlan): boolean {
     plan.groups.create.length === 0 &&
     plan.groups.replace.length === 0 &&
     plan.groups.mergeInto.length === 0 &&
-    plan.events.create.length === 0
+    plan.events.create.length === 0 &&
+    plan.measurements.create.length === 0
   );
 }
 
@@ -211,6 +228,9 @@ export function summarizePlan(plan: ImportPlan): string[] {
   const lines: string[] = [];
   const { things, groups, events } = plan;
 
+  if (plan.measurements.create.length) {
+    lines.push(`${plural(plan.measurements.create.length, "new measurement")}`);
+  }
   if (things.create.length) lines.push(`${plural(things.create.length, "new thing")}`);
   if (things.update.length) lines.push(`${plural(things.update.length, "thing")} updated`);
   if (things.unchanged.length) lines.push(`${String(things.unchanged.length)} already yours`);

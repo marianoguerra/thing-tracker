@@ -1,13 +1,13 @@
 import type { AppCollectionsCtx } from "@/db/collections";
 import { newThing, type Thing } from "@/db/schema";
-import type { DurationUnit } from "@/lib/duration";
+import type { ThingMeasurementDraft } from "@/components/measure/MeasurementPicker";
 
 export type ThingDraft = {
   emoji: string;
   title: string;
   description?: string;
   color?: string;
-  duration?: { defaultUnit: DurationUnit };
+  measurements?: ThingMeasurementDraft[];
 };
 
 export function createThing(collections: AppCollectionsCtx, draft: ThingDraft): Thing {
@@ -19,17 +19,15 @@ export function createThing(collections: AppCollectionsCtx, draft: ThingDraft): 
 export function updateThing(
   collections: AppCollectionsCtx,
   id: string,
-  patch: Partial<ThingDraft> & { archived?: boolean; duration?: ThingDraft["duration"] },
-  // Explicit, because `duration: undefined` in a partial is ambiguous between
-  // "leave it alone" and "turn duration tracking off".
-  options: { clearDuration?: boolean } = {},
+  patch: Partial<ThingDraft> & { archived?: boolean },
 ): void {
   collections.things.update(id, (draft) => {
     if (patch.emoji !== undefined) draft.emoji = patch.emoji;
     if (patch.title !== undefined) draft.title = patch.title;
     if (patch.archived !== undefined) draft.archived = patch.archived;
-    if (patch.duration !== undefined) draft.duration = patch.duration;
-    else if (options.clearDuration) delete draft.duration;
+    // An empty array is meaningful ("records nothing"), so this assigns
+    // whenever the key is present rather than treating [] as absent.
+    if (patch.measurements !== undefined) draft.measurements = patch.measurements;
     assignOptional(draft, "description", patch.description);
     assignOptional(draft, "color", patch.color);
     draft.updatedAt = Date.now();
