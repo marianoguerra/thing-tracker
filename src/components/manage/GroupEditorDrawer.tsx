@@ -1,0 +1,164 @@
+import { useLiveQuery } from "@tanstack/react-db";
+import { useEffect, useMemo, useState } from "react";
+
+import { EmojiPicker } from "@/components/emoji/EmojiPicker";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useCollections } from "@/db/provider";
+import type { Group } from "@/db/schema";
+
+export type GroupEditorState = { mode: "create" } | { mode: "edit"; group: Group };
+
+type Props = {
+  state: GroupEditorState | null;
+  onClose: () => void;
+  onSave: (draft: { title: string; emoji?: string; thingIds: string[] }) => void;
+  onDelete?: (group: Group) => void;
+};
+
+export function GroupEditorDrawer({ state, onClose, onSave, onDelete }: Props) {
+  const { things } = useCollections();
+  const { data: thingRows } = useLiveQuery((q) => q.from({ thing: things }));
+
+  const [title, setTitle] = useState("");
+  const [emoji, setEmoji] = useState<string>("");
+  const [members, setMembers] = useState<Set<string>>(new Set());
+  const [pickerOpen, setPickerOpen] = useState(false);
+
+  useEffect(() => {
+    if (!state) return;
+    if (state.mode === "edit") {
+      setTitle(state.group.title);
+      setEmoji(state.group.emoji ?? "");
+      setMembers(new Set(state.group.thingIds));
+    } else {
+      setTitle("");
+      setEmoji("");
+      setMembers(new Set());
+    }
+    setPickerOpen(false);
+  }, [state]);
+
+  const sorted = useMemo(
+    () => [...thingRows].sort((a, b) => a.title.localeCompare(b.title)),
+    [thingRows],
+  );
+
+  const editing = state?.mode === "edit" ? state.group : null;
+
+  return (
+    <Drawer open={state !== null} onOpenChange={(open) => !open && onClose()}>
+      <DrawerContent className="max-h-[92vh]">
+        <DrawerHeader className="pb-2">
+          <DrawerTitle>{editing ? "Edit tag" : "New tag"}</DrawerTitle>
+          <DrawerDescription>Pick which things this tag collects.</DrawerDescription>
+        </DrawerHeader>
+
+        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-4">
+          <div className="flex items-end gap-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="group-emoji">Emoji</Label>
+              <button
+                id="group-emoji"
+                type="button"
+                onClick={() => setPickerOpen((open) => !open)}
+                aria-expanded={pickerOpen}
+                className="emoji border-border text-muted-foreground flex size-11 items-center justify-center rounded-xl border text-2xl"
+              >
+                {emoji || "＋"}
+              </button>
+            </div>
+            <div className="flex-1 space-y-1.5">
+              <Label htmlFor="group-title">Name</Label>
+              <Input
+                id="group-title"
+                value={title}
+                onChange={(event) => setTitle(event.target.value)}
+                placeholder="Morning routine"
+                autoComplete="off"
+              />
+            </div>
+          </div>
+
+          {pickerOpen && (
+            <EmojiPicker
+              value={emoji}
+              onSelect={(next) => {
+                setEmoji(next);
+                setPickerOpen(false);
+              }}
+              className="max-h-64"
+            />
+          )}
+
+          <div className="space-y-1.5">
+            <Label>Things</Label>
+            <ul className="divide-border/60 divide-y">
+              {sorted.map((thing) => (
+                <li key={thing.id} className="flex items-center gap-3 py-2">
+                  <Checkbox
+                    id={`member-${thing.id}`}
+                    checked={members.has(thing.id)}
+                    onCheckedChange={(checked) => {
+                      setMembers((prev) => {
+                        const next = new Set(prev);
+                        if (checked === true) next.add(thing.id);
+                        else next.delete(thing.id);
+                        return next;
+                      });
+                    }}
+                  />
+                  <Label
+                    htmlFor={`member-${thing.id}`}
+                    className="flex flex-1 items-center gap-2 font-normal"
+                  >
+                    <span className="emoji text-lg" aria-hidden>
+                      {thing.emoji}
+                    </span>
+                    {thing.title}
+                  </Label>
+                </li>
+              ))}
+              {sorted.length === 0 && (
+                <li className="text-muted-foreground py-4 text-sm">No things to add yet.</li>
+              )}
+            </ul>
+          </div>
+        </div>
+
+        <DrawerFooter className="gap-2">
+          <Button
+            disabled={title.trim().length === 0}
+            onClick={() => {
+              onSave({
+                title: title.trim(),
+                emoji: emoji || undefined,
+                thingIds: [...members],
+              });
+            }}
+          >
+            {editing ? "Save" : "Create"}
+          </Button>
+          {editing && onDelete && (
+            <Button variant="ghost" className="text-destructive" onClick={() => onDelete(editing)}>
+              Delete tag
+            </Button>
+          )}
+          <Button variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
+  );
+}

@@ -1,0 +1,82 @@
+[
+  {
+    "id": "habits",
+    "title": "Habits",
+    "description": "Food, exercise, sleep and everyday activities — a broad starting point.",
+    "emoji": "🔁",
+    "version": 1,
+    "file": "habits.json",
+    "thingCount": 22,
+    "groupCount": 4
+  },
+  {
+    "id": "mood",
+    "title": "Mood",
+    "description": "How you're feeling, one tap at a time. Log as often as it changes.",
+    "emoji": "😊",
+    "version": 1,
+    "file": "mood.json",
+    "thingCount": 10,
+    "groupCount": 1
+  },
+  {
+    "id": "hydration",
+    "title": "Hydration & caffeine",
+    "description": "What you drink through the day, from water to the evening wine.",
+    "emoji": "💧",
+    "version": 1,
+    "file": "hydration.json",
+    "thingCount": 6,
+    "groupCount": 1
+  },
+  {
+    "id": "health",
+    "title": "Health & symptoms",
+    "description": "Medication, symptoms and appointments — useful to show a doctor.",
+    "emoji": "💊",
+    "version": 1,
+    "file": "health.json",
+    "thingCount": 11,
+    "groupCount": 3
+  },
+  {
+    "id": "focus",
+    "title": "Focus & work",
+    "description": "Deep work, meetings and the things that break your concentration.",
+    "emoji": "🎯",
+    "version": 1,
+    "file": "focus.json",
+    "thingCount": 10,
+    "groupCount": 2
+  },
+  {
+    "id": "screen",
+    "title": "Screen time",
+    "description": "Where the hours go — and the times you deliberately stepped away.",
+    "emoji": "📱",
+    "version": 1,
+    "file": "screen.json",
+    "thingCount": 5,
+    "groupCount": 1
+  },
+  {
+    "id": "home",
+    "title": "Home & chores",
+    "description": "The recurring household jobs that are easy to lose track of.",
+    "emoji": "🧹",
+    "version": 1,
+    "file": "home.json",
+    "thingCount": 7,
+    "groupCount": 1
+  },
+  {
+    "id": "pets",
+    "title": "Pets",
+    "description": "Walks, feeds, medication and vet visits — shareable with whoever else helps.",
+    "emoji": "🐾",
+    "version": 1,
+    "file": "pets.json",
+    "thingCount": 6,
+    "groupCount": 1
+  }
+]

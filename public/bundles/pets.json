@@ -1,0 +1,87 @@
+{
+  "format": "thing-tracker/group-pack",
+  "version": 1,
+  "exportedAt": 0,
+  "bundle": {
+    "id": "pets",
+    "title": "Pets",
+    "description": "Walks, feeds, medication and vet visits — shareable with whoever else helps.",
+    "emoji": "🐾",
+    "version": 1
+  },
+  "groups": [
+    {
+      "id": "69c09a5b-193b-5eff-8457-ab3832334a5d",
+      "title": "Pet care",
+      "emoji": "🐾",
+      "sortOrder": 0,
+      "thingIds": [
+        "c2479e39-4afd-5a82-a613-c8f42ba38f3a",
+        "c6dff20e-7110-57be-8c2f-a734ef0ed466",
+        "fcfa3ec1-ba11-594f-9396-210e9e4cfba2",
+        "17b87aa7-8116-5f54-821a-e7c664975fdd",
+        "4eae0ce5-bb5d-59db-9e0b-70aa58623c04",
+        "4aaa49ee-a11c-571e-ab8f-51a995ef46ba"
+      ],
+      "bundleId": "pets",
+      "createdAt": 0,
+      "updatedAt": 0
+    }
+  ],
+  "things": [
+    {
+      "id": "c2479e39-4afd-5a82-a613-c8f42ba38f3a",
+      "emoji": "🐕",
+      "title": "Walk",
+      "archived": false,
+      "bundleId": "pets",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "c6dff20e-7110-57be-8c2f-a734ef0ed466",
+      "emoji": "🍖",
+      "title": "Fed",
+      "archived": false,
+      "bundleId": "pets",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "fcfa3ec1-ba11-594f-9396-210e9e4cfba2",
+      "emoji": "💊",
+      "title": "Medication",
+      "archived": false,
+      "bundleId": "pets",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "17b87aa7-8116-5f54-821a-e7c664975fdd",
+      "emoji": "🏥",
+      "title": "Vet",
+      "archived": false,
+      "bundleId": "pets",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "4eae0ce5-bb5d-59db-9e0b-70aa58623c04",
+      "emoji": "✂️",
+      "title": "Groomed",
+      "archived": false,
+      "bundleId": "pets",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "4aaa49ee-a11c-571e-ab8f-51a995ef46ba",
+      "emoji": "🎾",
+      "title": "Play",
+      "archived": false,
+      "bundleId": "pets",
+      "createdAt": 0,
+      "updatedAt": 0
+    }
+  ]
+}

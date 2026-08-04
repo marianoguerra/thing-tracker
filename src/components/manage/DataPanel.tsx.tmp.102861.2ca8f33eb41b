@@ -1,0 +1,109 @@
+import { useLiveQuery } from "@tanstack/react-db";
+import { DownloadIcon, UploadIcon } from "lucide-react";
+import { useRef, useState } from "react";
+import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
+import { useDb } from "@/db/provider";
+import { saveOrShare } from "@/lib/file";
+import { backupFilename, buildBackup } from "@/transfer/export";
+
+type Props = {
+  onImportText: (text: string, mode: "merge" | "replace") => void;
+};
+
+export function DataPanel({ onImportText }: Props) {
+  const { db, collections } = useDb();
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [mode, setMode] = useState<"merge" | "replace">("merge");
+  const [busy, setBusy] = useState(false);
+
+  const { data: things } = useLiveQuery((q) => q.from({ thing: collections.things }));
+  const { data: groups } = useLiveQuery((q) => q.from({ group: collections.groups }));
+  const { data: events } = useLiveQuery((q) => q.from({ event: collections.events }));
+
+  async function exportBackup() {
+    setBusy(true);
+    try {
+      const envelope = await buildBackup(db, collections);
+      await saveOrShare(JSON.stringify(envelope, null, 2), backupFilename());
+      if (envelope.attachmentsOmitted) {
+        toast.warning("Media not included", {
+          description: "The attachments were too large for a single file.",
+        });
+      }
+    } catch (error) {
+      toast.error("Export failed", {
+        description: error instanceof Error ? error.message : String(error),
+      });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="space-y-6 p-4">
+      <section className="space-y-2">
+        <h2 className="text-sm font-medium">Backup</h2>
+        <p className="text-muted-foreground text-xs">
+          Everything lives on this device only. Nothing is uploaded anywhere, which also means a
+          lost phone is a lost history — export a copy now and then.
+        </p>
+        <p className="text-muted-foreground text-xs tabular-nums">
+          {things.length} things · {groups.length} tags · {events.length} entries
+        </p>
+        <Button className="w-full" onClick={() => void exportBackup()} disabled={busy}>
+          <DownloadIcon /> Export a backup
+        </Button>
+      </section>
+
+      <section className="space-y-2">
+        <h2 className="text-sm font-medium">Restore or import</h2>
+        <p className="text-muted-foreground text-xs">
+          Opens a backup or a shared set of tags. You&apos;ll see exactly what changes before
+          anything is written.
+        </p>
+
+        <div
+          role="radiogroup"
+          aria-label="How to apply a backup"
+          className="bg-muted flex rounded-lg p-0.5 text-sm"
+        >
+          {(["merge", "replace"] as const).map((value) => (
+            <button
+              key={value}
+              type="button"
+              role="radio"
+              aria-checked={mode === value}
+              onClick={() => setMode(value)}
+              className={
+                mode === value
+                  ? "bg-background flex-1 rounded-md px-3 py-1.5 font-medium shadow-sm"
+                  : "text-muted-foreground flex-1 rounded-md px-3 py-1.5"
+              }
+            >
+              {value === "merge" ? "Merge" : "Replace all"}
+            </button>
+          ))}
+        </div>
+
+        <input
+          ref={fileRef}
+          type="file"
+          accept="application/json,.json"
+          className="sr-only"
+          onChange={(event) => {
+            const file = event.target.files?.[0];
+            // Reset first so picking the same file twice still fires a change.
+            event.target.value = "";
+            if (!file) return;
+            void file.text().then((text) => onImportText(text, mode));
+          }}
+        />
+        <Button variant="outline" className="w-full" onClick={() => fileRef.current?.click()}>
+          <UploadIcon /> Choose a file
+        </Button>
+      </section>
+    </div>
+  );
+}

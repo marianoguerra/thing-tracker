@@ -1,0 +1,127 @@
+{
+  "format": "thing-tracker/group-pack",
+  "version": 1,
+  "exportedAt": 0,
+  "bundle": {
+    "id": "mood",
+    "title": "Mood",
+    "description": "How you're feeling, one tap at a time. Log as often as it changes.",
+    "emoji": "😊",
+    "version": 1
+  },
+  "groups": [
+    {
+      "id": "b1c646a1-5f2b-53ae-98bf-3689b0e28bab",
+      "title": "Mood",
+      "emoji": "😊",
+      "sortOrder": 0,
+      "thingIds": [
+        "8e0276d9-a022-5ec4-bed2-cf0ee41207e0",
+        "20e44cba-0191-56b1-a104-8c0f5b8fac7a",
+        "b707e34e-194c-544c-9d9a-b55cd5a8b933",
+        "71518bef-c343-592b-99b5-03b41b96131b",
+        "b25673a1-f7e2-51a0-b4ac-26846ce99ae7",
+        "afe95349-80dd-5514-af6f-bb2853115758",
+        "828c44b5-e9c4-5d8e-9678-d63085697797",
+        "52fe11d1-c13b-5c6e-8097-cc40fd96ad31",
+        "cb2efd61-00da-5a3b-95f6-a326b467dd13",
+        "17764519-07be-535f-9b19-f23b81028e9f"
+      ],
+      "bundleId": "mood",
+      "createdAt": 0,
+      "updatedAt": 0
+    }
+  ],
+  "things": [
+    {
+      "id": "8e0276d9-a022-5ec4-bed2-cf0ee41207e0",
+      "emoji": "🤩",
+      "title": "Great",
+      "archived": false,
+      "bundleId": "mood",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "20e44cba-0191-56b1-a104-8c0f5b8fac7a",
+      "emoji": "😊",
+      "title": "Happy",
+      "archived": false,
+      "bundleId": "mood",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "b707e34e-194c-544c-9d9a-b55cd5a8b933",
+      "emoji": "😌",
+      "title": "Calm",
+      "archived": false,
+      "bundleId": "mood",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "71518bef-c343-592b-99b5-03b41b96131b",
+      "emoji": "🙂",
+      "title": "Okay",
+      "archived": false,
+      "bundleId": "mood",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "b25673a1-f7e2-51a0-b4ac-26846ce99ae7",
+      "emoji": "😐",
+      "title": "Meh",
+      "archived": false,
+      "bundleId": "mood",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "afe95349-80dd-5514-af6f-bb2853115758",
+      "emoji": "🥱",
+      "title": "Tired",
+      "archived": false,
+      "bundleId": "mood",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "828c44b5-e9c4-5d8e-9678-d63085697797",
+      "emoji": "😰",
+      "title": "Anxious",
+      "archived": false,
+      "bundleId": "mood",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "52fe11d1-c13b-5c6e-8097-cc40fd96ad31",
+      "emoji": "😔",
+      "title": "Low",
+      "archived": false,
+      "bundleId": "mood",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "cb2efd61-00da-5a3b-95f6-a326b467dd13",
+      "emoji": "😠",
+      "title": "Angry",
+      "archived": false,
+      "bundleId": "mood",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "17764519-07be-535f-9b19-f23b81028e9f",
+      "emoji": "🫠",
+      "title": "Overwhelmed",
+      "archived": false,
+      "bundleId": "mood",
+      "createdAt": 0,
+      "updatedAt": 0
+    }
+  ]
+}

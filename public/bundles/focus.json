@@ -1,0 +1,138 @@
+{
+  "format": "thing-tracker/group-pack",
+  "version": 1,
+  "exportedAt": 0,
+  "bundle": {
+    "id": "focus",
+    "title": "Focus & work",
+    "description": "Deep work, meetings and the things that break your concentration.",
+    "emoji": "🎯",
+    "version": 1
+  },
+  "groups": [
+    {
+      "id": "a8e2cc6b-ec9e-557b-83ee-af4c35afaf5f",
+      "title": "Work",
+      "emoji": "🎯",
+      "sortOrder": 0,
+      "thingIds": [
+        "8c60d5f1-8fc7-5f83-9bf4-b3cee07c2fdc",
+        "bb741262-2f97-52e1-89dc-70b7f4a2fb8c",
+        "3aee2689-cf2a-5e0f-a1f4-ec55991075f7",
+        "2769222a-15d4-509c-8574-1b024eb5aaca",
+        "6ca9ef43-3e82-5308-bd69-f51fe789df7e",
+        "7869c9b5-6690-5d57-8ae3-acd40f13cfd4"
+      ],
+      "bundleId": "focus",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "37810583-677a-50b7-b257-95862b6dae65",
+      "title": "Learning",
+      "emoji": "📚",
+      "sortOrder": 1,
+      "thingIds": [
+        "b66a7c07-8a3e-5801-aaf8-afad007d8c62",
+        "be3fee76-c821-5b66-a0fb-6b8057dd299e",
+        "91440335-0a95-5f44-9998-95a0524d8e4d",
+        "33838f54-ea22-5fb8-9cbf-a8a3943d23e6"
+      ],
+      "bundleId": "focus",
+      "createdAt": 0,
+      "updatedAt": 0
+    }
+  ],
+  "things": [
+    {
+      "id": "8c60d5f1-8fc7-5f83-9bf4-b3cee07c2fdc",
+      "emoji": "🎯",
+      "title": "Deep work",
+      "archived": false,
+      "bundleId": "focus",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "bb741262-2f97-52e1-89dc-70b7f4a2fb8c",
+      "emoji": "📅",
+      "title": "Meeting",
+      "archived": false,
+      "bundleId": "focus",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "3aee2689-cf2a-5e0f-a1f4-ec55991075f7",
+      "emoji": "📞",
+      "title": "Call",
+      "archived": false,
+      "bundleId": "focus",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "2769222a-15d4-509c-8574-1b024eb5aaca",
+      "emoji": "📝",
+      "title": "Admin",
+      "archived": false,
+      "bundleId": "focus",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "6ca9ef43-3e82-5308-bd69-f51fe789df7e",
+      "emoji": "⏸️",
+      "title": "Break",
+      "archived": false,
+      "bundleId": "focus",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "7869c9b5-6690-5d57-8ae3-acd40f13cfd4",
+      "emoji": "🚫",
+      "title": "Got distracted",
+      "archived": false,
+      "bundleId": "focus",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "b66a7c07-8a3e-5801-aaf8-afad007d8c62",
+      "emoji": "📚",
+      "title": "Study",
+      "archived": false,
+      "bundleId": "focus",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "be3fee76-c821-5b66-a0fb-6b8057dd299e",
+      "emoji": "📖",
+      "title": "Reading",
+      "archived": false,
+      "bundleId": "focus",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "91440335-0a95-5f44-9998-95a0524d8e4d",
+      "emoji": "🗣️",
+      "title": "Language practice",
+      "archived": false,
+      "bundleId": "focus",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "33838f54-ea22-5fb8-9cbf-a8a3943d23e6",
+      "emoji": "🎓",
+      "title": "Course",
+      "archived": false,
+      "bundleId": "focus",
+      "createdAt": 0,
+      "updatedAt": 0
+    }
+  ]
+}

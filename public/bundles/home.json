@@ -1,0 +1,97 @@
+{
+  "format": "thing-tracker/group-pack",
+  "version": 1,
+  "exportedAt": 0,
+  "bundle": {
+    "id": "home",
+    "title": "Home & chores",
+    "description": "The recurring household jobs that are easy to lose track of.",
+    "emoji": "🧹",
+    "version": 1
+  },
+  "groups": [
+    {
+      "id": "335af1f1-b5f2-57f6-a9b1-65bdff90efbd",
+      "title": "Chores",
+      "emoji": "🧹",
+      "sortOrder": 0,
+      "thingIds": [
+        "13d478ba-3337-51f3-afe1-86023db8e939",
+        "69215e83-9c6e-528d-b7d3-698e2c96f59f",
+        "aea1ca76-4ec7-54e1-995b-677ff054a7ee",
+        "953fa7d2-b724-5eb5-85d8-cc3fa2ed862f",
+        "fb53848b-8253-53c0-8835-006c5147c7ac",
+        "9b78b668-27cd-5805-9587-d5702eae99a4",
+        "53493697-be72-5199-bfd0-7801ea865059"
+      ],
+      "bundleId": "home",
+      "createdAt": 0,
+      "updatedAt": 0
+    }
+  ],
+  "things": [
+    {
+      "id": "13d478ba-3337-51f3-afe1-86023db8e939",
+      "emoji": "🍴",
+      "title": "Dishes",
+      "archived": false,
+      "bundleId": "home",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "69215e83-9c6e-528d-b7d3-698e2c96f59f",
+      "emoji": "🧺",
+      "title": "Laundry",
+      "archived": false,
+      "bundleId": "home",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "aea1ca76-4ec7-54e1-995b-677ff054a7ee",
+      "emoji": "🧹",
+      "title": "Tidied",
+      "archived": false,
+      "bundleId": "home",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "953fa7d2-b724-5eb5-85d8-cc3fa2ed862f",
+      "emoji": "🧽",
+      "title": "Deep clean",
+      "archived": false,
+      "bundleId": "home",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "fb53848b-8253-53c0-8835-006c5147c7ac",
+      "emoji": "🗑️",
+      "title": "Bins out",
+      "archived": false,
+      "bundleId": "home",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "9b78b668-27cd-5805-9587-d5702eae99a4",
+      "emoji": "🛒",
+      "title": "Groceries",
+      "archived": false,
+      "bundleId": "home",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "53493697-be72-5199-bfd0-7801ea865059",
+      "emoji": "🪴",
+      "title": "Watered plants",
+      "archived": false,
+      "bundleId": "home",
+      "createdAt": 0,
+      "updatedAt": 0
+    }
+  ]
+}

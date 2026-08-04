@@ -3,7 +3,9 @@
     "target": "es2023",
     "module": "esnext",
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
-    "types": ["vite/client", "vite-plugin-pwa/react"],
+    /* `node` is here for scripts/, which runs under plain Node. App code should
+       still not reach for Node APIs — nothing in src/ needs them. */
+    "types": ["vite/client", "vite-plugin-pwa/react", "node"],
     "jsx": "react-jsx",
     "allowArbitraryExtensions": true,
     "skipLibCheck": true,

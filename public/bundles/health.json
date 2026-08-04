@@ -1,0 +1,159 @@
+{
+  "format": "thing-tracker/group-pack",
+  "version": 1,
+  "exportedAt": 0,
+  "bundle": {
+    "id": "health",
+    "title": "Health & symptoms",
+    "description": "Medication, symptoms and appointments — useful to show a doctor.",
+    "emoji": "💊",
+    "version": 1
+  },
+  "groups": [
+    {
+      "id": "eb7d4269-8054-50f1-9d81-4a8debe3c42a",
+      "title": "Medication",
+      "emoji": "💊",
+      "sortOrder": 0,
+      "thingIds": [
+        "6d9359ce-0f38-5521-9e3a-2920b2b2d175",
+        "c33d9fea-8043-5467-805d-6898f3faeb9e",
+        "60fe0c10-b28a-5b2b-a044-1425da383662"
+      ],
+      "bundleId": "health",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "dc0a7503-1432-5dcb-ab48-0e3e81b9af00",
+      "title": "Symptoms",
+      "emoji": "🤕",
+      "sortOrder": 1,
+      "thingIds": [
+        "ff3096db-6122-5c7b-92e2-964b7bbdf5c0",
+        "841ff52f-dbae-50c6-bcae-ecaaa3ff5d9f",
+        "5c205aba-fe1d-518a-a85b-c0e761692e3b",
+        "3cfe9181-9043-5dca-ad2c-726905616569",
+        "7aeb91aa-e8ce-5e9b-ac38-cfe46c806c21"
+      ],
+      "bundleId": "health",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "b4fa942b-6018-5bf7-8a08-f75fb746741c",
+      "title": "Care",
+      "emoji": "🩺",
+      "sortOrder": 2,
+      "thingIds": [
+        "1e449a82-e11c-59cc-abdf-ae8d0b38f273",
+        "e0978312-a444-5ce0-bb26-a30423b2033b",
+        "cfe226a8-3d64-51c8-99f0-c8e216637d87"
+      ],
+      "bundleId": "health",
+      "createdAt": 0,
+      "updatedAt": 0
+    }
+  ],
+  "things": [
+    {
+      "id": "6d9359ce-0f38-5521-9e3a-2920b2b2d175",
+      "emoji": "💊",
+      "title": "Took medication",
+      "archived": false,
+      "bundleId": "health",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "c33d9fea-8043-5467-805d-6898f3faeb9e",
+      "emoji": "❗",
+      "title": "Missed a dose",
+      "archived": false,
+      "bundleId": "health",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "60fe0c10-b28a-5b2b-a044-1425da383662",
+      "emoji": "💉",
+      "title": "Injection",
+      "archived": false,
+      "bundleId": "health",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "ff3096db-6122-5c7b-92e2-964b7bbdf5c0",
+      "emoji": "🤕",
+      "title": "Headache",
+      "archived": false,
+      "bundleId": "health",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "841ff52f-dbae-50c6-bcae-ecaaa3ff5d9f",
+      "emoji": "🤒",
+      "title": "Felt unwell",
+      "archived": false,
+      "bundleId": "health",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "5c205aba-fe1d-518a-a85b-c0e761692e3b",
+      "emoji": "🌡️",
+      "title": "Temperature",
+      "archived": false,
+      "bundleId": "health",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "3cfe9181-9043-5dca-ad2c-726905616569",
+      "emoji": "🤧",
+      "title": "Allergy",
+      "archived": false,
+      "bundleId": "health",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "7aeb91aa-e8ce-5e9b-ac38-cfe46c806c21",
+      "emoji": "🦴",
+      "title": "Pain",
+      "archived": false,
+      "bundleId": "health",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "1e449a82-e11c-59cc-abdf-ae8d0b38f273",
+      "emoji": "🩺",
+      "title": "Appointment",
+      "archived": false,
+      "bundleId": "health",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "e0978312-a444-5ce0-bb26-a30423b2033b",
+      "emoji": "⚖️",
+      "title": "Weighed in",
+      "archived": false,
+      "bundleId": "health",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "cfe226a8-3d64-51c8-99f0-c8e216637d87",
+      "emoji": "🦷",
+      "title": "Dental care",
+      "archived": false,
+      "bundleId": "health",
+      "createdAt": 0,
+      "updatedAt": 0
+    }
+  ]
+}

@@ -7,6 +7,7 @@
     "dev": "vp dev",
     "build": "tsc && vp build",
     "preview": "vp preview",
+    "bundles": "node --experimental-strip-types scripts/build-bundles.ts",
     "prepare": "vp config"
   },
   "dependencies": {
@@ -31,6 +32,7 @@
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",
     "@tanstack/router-plugin": "1.168.23",
+    "@types/node": "^26.1.2",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
     "@vite-pwa/assets-generator": "^1.0.2",

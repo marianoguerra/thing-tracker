@@ -275,6 +275,9 @@ importers:
       '@tanstack/router-plugin':
         specifier: 1.168.23
         version: 1.168.23(@tanstack/react-router@1.170.18(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(@voidzero-dev/vite-plus-core@0.2.4(@types/node@26.1.2)(jiti@2.7.0)(terser@5.49.0)(typescript@6.0.3))(rollup@4.62.4)
+      '@types/node':
+        specifier: ^26.1.2
+        version: 26.1.2
       '@types/react':
         specifier: ^19.2.18
         version: 19.2.18

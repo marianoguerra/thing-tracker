@@ -1,0 +1,280 @@
+{
+  "format": "thing-tracker/group-pack",
+  "version": 1,
+  "exportedAt": 0,
+  "bundle": {
+    "id": "habits",
+    "title": "Habits",
+    "description": "Food, exercise, sleep and everyday activities — a broad starting point.",
+    "emoji": "🔁",
+    "version": 1
+  },
+  "groups": [
+    {
+      "id": "be0b2f47-d458-5529-8fcb-f236a407e12d",
+      "title": "Food",
+      "emoji": "🍎",
+      "sortOrder": 0,
+      "thingIds": [
+        "12c00133-7842-5018-a78a-889c6a1c7028",
+        "953c38f3-d491-5a62-9961-d499e9d295a1",
+        "d376c621-6db1-50fb-9021-8adcdd6137d4",
+        "bec5f42f-5d36-58d1-a7fc-4fcdf9b9f034",
+        "83f33827-e5a4-5753-b074-360504ed60fb",
+        "4241413f-b8e0-53fb-8a89-8c502602bd8f"
+      ],
+      "bundleId": "habits",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "ad98cba8-1c82-588a-8e6c-710b4eb5c79b",
+      "title": "Exercise",
+      "emoji": "🏃",
+      "sortOrder": 1,
+      "thingIds": [
+        "137f9365-6fe5-5a41-8108-1fc1d7907850",
+        "5d3b2619-2afb-595a-8f78-e497570dea32",
+        "e89b448c-9d36-5503-b48f-4358058d91c1",
+        "aecb420a-7432-5b86-b31c-6f877d9993d0",
+        "5eabb3ca-2de6-5dac-9be8-95b596457e8f",
+        "3d2357f6-6942-51ce-8f05-feb59af2d092"
+      ],
+      "bundleId": "habits",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "29a44f45-5664-53a2-a8c0-5054248a2467",
+      "title": "Sleep",
+      "emoji": "😴",
+      "sortOrder": 2,
+      "thingIds": [
+        "85bb2988-469a-54b1-a1a3-6ee7c4efc814",
+        "ee127733-56b8-516e-baa0-dd5cc4f02ea7",
+        "b5a16afc-91f4-5e40-9b32-78f349191178",
+        "2fd0321a-ef8e-5c32-a7bf-56b2766428ff"
+      ],
+      "bundleId": "habits",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "64b65209-1e60-5556-8bd1-c4743a884cf6",
+      "title": "Activities",
+      "emoji": "🎨",
+      "sortOrder": 3,
+      "thingIds": [
+        "1aea87c1-c0cb-5b25-a13a-1f257a1a9987",
+        "73f89d6d-fe7f-5d2d-ae58-9bcdefe8d96c",
+        "5b257977-8849-5bef-92da-43aa7e00992d",
+        "75d403df-bb97-5a5c-af30-3843e896f260",
+        "90acec07-45a5-56b5-ae18-4fc9074c18f4",
+        "6203cb13-064d-5872-b31e-4951b654513a"
+      ],
+      "bundleId": "habits",
+      "createdAt": 0,
+      "updatedAt": 0
+    }
+  ],
+  "things": [
+    {
+      "id": "12c00133-7842-5018-a78a-889c6a1c7028",
+      "emoji": "🥣",
+      "title": "Breakfast",
+      "archived": false,
+      "bundleId": "habits",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "953c38f3-d491-5a62-9961-d499e9d295a1",
+      "emoji": "🥗",
+      "title": "Lunch",
+      "archived": false,
+      "bundleId": "habits",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "d376c621-6db1-50fb-9021-8adcdd6137d4",
+      "emoji": "🍽️",
+      "title": "Dinner",
+      "archived": false,
+      "bundleId": "habits",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "bec5f42f-5d36-58d1-a7fc-4fcdf9b9f034",
+      "emoji": "🍪",
+      "title": "Snack",
+      "archived": false,
+      "bundleId": "habits",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "83f33827-e5a4-5753-b074-360504ed60fb",
+      "emoji": "🥡",
+      "title": "Takeaway",
+      "archived": false,
+      "bundleId": "habits",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "4241413f-b8e0-53fb-8a89-8c502602bd8f",
+      "emoji": "🍫",
+      "title": "Something sweet",
+      "archived": false,
+      "bundleId": "habits",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "137f9365-6fe5-5a41-8108-1fc1d7907850",
+      "emoji": "🏃",
+      "title": "Run",
+      "archived": false,
+      "bundleId": "habits",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "5d3b2619-2afb-595a-8f78-e497570dea32",
+      "emoji": "🚶",
+      "title": "Walk",
+      "archived": false,
+      "bundleId": "habits",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "e89b448c-9d36-5503-b48f-4358058d91c1",
+      "emoji": "🏋️",
+      "title": "Gym",
+      "archived": false,
+      "bundleId": "habits",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "aecb420a-7432-5b86-b31c-6f877d9993d0",
+      "emoji": "🧘",
+      "title": "Yoga",
+      "archived": false,
+      "bundleId": "habits",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "5eabb3ca-2de6-5dac-9be8-95b596457e8f",
+      "emoji": "🚴",
+      "title": "Cycle",
+      "archived": false,
+      "bundleId": "habits",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "3d2357f6-6942-51ce-8f05-feb59af2d092",
+      "emoji": "🤸",
+      "title": "Stretch",
+      "archived": false,
+      "bundleId": "habits",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "85bb2988-469a-54b1-a1a3-6ee7c4efc814",
+      "emoji": "🛏️",
+      "title": "Went to bed",
+      "archived": false,
+      "bundleId": "habits",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "ee127733-56b8-516e-baa0-dd5cc4f02ea7",
+      "emoji": "🌅",
+      "title": "Woke up",
+      "archived": false,
+      "bundleId": "habits",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "b5a16afc-91f4-5e40-9b32-78f349191178",
+      "emoji": "💤",
+      "title": "Nap",
+      "archived": false,
+      "bundleId": "habits",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "2fd0321a-ef8e-5c32-a7bf-56b2766428ff",
+      "emoji": "🌙",
+      "title": "Woke in the night",
+      "archived": false,
+      "bundleId": "habits",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "1aea87c1-c0cb-5b25-a13a-1f257a1a9987",
+      "emoji": "📖",
+      "title": "Read",
+      "archived": false,
+      "bundleId": "habits",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "73f89d6d-fe7f-5d2d-ae58-9bcdefe8d96c",
+      "emoji": "🎸",
+      "title": "Practised music",
+      "archived": false,
+      "bundleId": "habits",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "5b257977-8849-5bef-92da-43aa7e00992d",
+      "emoji": "🎮",
+      "title": "Gaming",
+      "archived": false,
+      "bundleId": "habits",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "75d403df-bb97-5a5c-af30-3843e896f260",
+      "emoji": "🎨",
+      "title": "Made something",
+      "archived": false,
+      "bundleId": "habits",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "90acec07-45a5-56b5-ae18-4fc9074c18f4",
+      "emoji": "🧹",
+      "title": "Chores",
+      "archived": false,
+      "bundleId": "habits",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "6203cb13-064d-5872-b31e-4951b654513a",
+      "emoji": "🌳",
+      "title": "Went outdoors",
+      "archived": false,
+      "bundleId": "habits",
+      "createdAt": 0,
+      "updatedAt": 0
+    }
+  ]
+}

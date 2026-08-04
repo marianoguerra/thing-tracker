@@ -1,0 +1,77 @@
+{
+  "format": "thing-tracker/group-pack",
+  "version": 1,
+  "exportedAt": 0,
+  "bundle": {
+    "id": "screen",
+    "title": "Screen time",
+    "description": "Where the hours go — and the times you deliberately stepped away.",
+    "emoji": "📱",
+    "version": 1
+  },
+  "groups": [
+    {
+      "id": "32760a78-fe1f-599b-9101-b6d806d5170f",
+      "title": "Screens",
+      "emoji": "📱",
+      "sortOrder": 0,
+      "thingIds": [
+        "e4eddab6-3ad0-5dc9-bc15-6ea31114fec2",
+        "ea375e02-1fb4-5910-aadd-536d7dafd65c",
+        "474d9443-a2d2-5f0f-9c2e-bb7f3ece1a3f",
+        "cade0f5b-63d0-57a9-9d6a-034c98aa495b",
+        "2b0724c7-7985-536d-9b87-2c8bb1fd3c8b"
+      ],
+      "bundleId": "screen",
+      "createdAt": 0,
+      "updatedAt": 0
+    }
+  ],
+  "things": [
+    {
+      "id": "e4eddab6-3ad0-5dc9-bc15-6ea31114fec2",
+      "emoji": "📱",
+      "title": "Phone",
+      "archived": false,
+      "bundleId": "screen",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "ea375e02-1fb4-5910-aadd-536d7dafd65c",
+      "emoji": "💬",
+      "title": "Social media",
+      "archived": false,
+      "bundleId": "screen",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "474d9443-a2d2-5f0f-9c2e-bb7f3ece1a3f",
+      "emoji": "📺",
+      "title": "TV",
+      "archived": false,
+      "bundleId": "screen",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "cade0f5b-63d0-57a9-9d6a-034c98aa495b",
+      "emoji": "🎮",
+      "title": "Gaming",
+      "archived": false,
+      "bundleId": "screen",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "2b0724c7-7985-536d-9b87-2c8bb1fd3c8b",
+      "emoji": "📵",
+      "title": "Phone-free time",
+      "archived": false,
+      "bundleId": "screen",
+      "createdAt": 0,
+      "updatedAt": 0
+    }
+  ]
+}
