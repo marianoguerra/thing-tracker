@@ -3,6 +3,7 @@ import { Suspense } from "react";
 
 import { SplashScreen } from "@/components/layout/SplashScreen";
 import { StorageErrorBoundary } from "@/components/layout/StorageErrorBoundary";
+import { UpdatePrompt } from "@/components/pwa/UpdatePrompt";
 import { Toaster } from "@/components/ui/sonner";
 import { DbProvider } from "@/db/provider";
 
@@ -18,6 +19,9 @@ function RootLayout() {
         <DbProvider>
           <Outlet />
           <Toaster />
+          {/* Outside Suspense-sensitive content: the update offer must still
+              reach the user if a screen below is stuck loading. */}
+          <UpdatePrompt />
         </DbProvider>
       </Suspense>
     </StorageErrorBoundary>

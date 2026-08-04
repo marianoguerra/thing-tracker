@@ -4,6 +4,8 @@ import { useDeferredValue, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { DurationSheet } from "@/components/duration/DurationSheet";
+import { InstallHint } from "@/components/pwa/InstallHint";
+import { StorageBanner } from "@/components/pwa/StorageBanner";
 import type { Thing } from "@/db/schema";
 import { useCollections } from "@/db/provider";
 import { deleteEvent, durationHistory, logEvent } from "@/domain/events";
@@ -136,6 +138,14 @@ export function TrackScreen({ onInspectThing, onEditEvent, onCreateThing }: Prop
         anyOpen={anyOpen}
         onToggleAll={handleToggleAll}
       />
+
+      {/*
+        On Track rather than tucked into Manage → Data. Both are one-time,
+        dismissible and only render when they apply — and a warning about
+        losing your data is worthless where nobody looks.
+      */}
+      <StorageBanner />
+      <InstallHint />
 
       {rows.length === 0 ? (
         <div className="space-y-3 px-4 py-10 text-center">
