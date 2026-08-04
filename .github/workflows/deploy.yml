@@ -1,0 +1,71 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  # Lets you redeploy the current main without an empty commit.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  # Required by actions/deploy-pages to mint its OIDC token.
+  id-token: write
+
+# Let an in-flight deploy finish rather than cancelling it half-published.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Installs Vite+, Node and the package manager in one step, and caches
+      # the dependency store.
+      - uses: voidzero-dev/setup-vp@v1
+        with:
+          node-version: "24"
+          cache: true
+
+      - run: vp install
+
+      # The same gate used locally. A deploy that skips it is a deploy that
+      # publishes a build nobody type-checked.
+      - run: vp check
+      - run: vp test
+
+      - name: Build for the project-page subpath
+        # This repo publishes to marianoguerra.github.io/thing-tracker/, so the
+        # app is NOT at the domain root. Without this the asset URLs point at
+        # /assets/… and the page loads to a blank screen.
+        env:
+          BASE_PATH: /thing-tracker/
+        run: vp build
+
+      - name: Add SPA fallback
+        # GitHub Pages has no rewrite rules, but it does serve 404.html for
+        # unknown paths. Copying the shell there is what makes a direct hit on
+        # /thing-tracker/insights work instead of 404ing.
+        run: cp dist/index.html dist/404.html
+
+      - name: Skip Jekyll
+        # Pages runs Jekyll by default, which silently drops files and folders
+        # beginning with an underscore.
+        run: touch dist/.nojekyll
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

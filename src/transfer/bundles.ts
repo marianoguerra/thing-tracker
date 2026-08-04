@@ -1,7 +1,9 @@
 import type { BundleIndexEntry } from "@/bundles/build";
 import { parseEnvelope, type PackEnvelope } from "./envelope";
 
-const BASE = "/bundles";
+// `BASE_URL` is Vite's build-time base ("/" or e.g. "/thing-tracker/"), always
+// with a trailing slash — so these resolve correctly wherever the app is served.
+const BASE = `${import.meta.env.BASE_URL}bundles`;
 
 /**
  * Bundles are fetched from precached static files rather than bundled into the

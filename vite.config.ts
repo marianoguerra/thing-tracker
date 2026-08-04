@@ -1,7 +1,29 @@
 import { resolve } from "node:path";
 import { defineConfig, lazyPlugins } from "vite-plus";
 
+/**
+ * Where the app will be served from, e.g. "/" or "/thing-tracker/".
+ *
+ * Set at build time rather than committed, so the same source can ship to a
+ * domain root and to a GitHub project page without a code change:
+ *
+ *   BASE_PATH=/thing-tracker/ vp run build
+ *
+ * Vite requires leading and trailing slashes, and gets no second chance to
+ * complain — a missing slash silently produces asset URLs like
+ * "/thing-trackerassets/index.js" — so normalise rather than trust the input.
+ */
+const BASE_PATH = normalizeBase(process.env.BASE_PATH);
+
+function normalizeBase(value: string | undefined): string {
+  const trimmed = (value ?? "/").trim();
+  if (trimmed === "" || trimmed === "/") return "/";
+  return `/${trimmed.replace(/^\/+|\/+$/g, "")}/`;
+}
+
 export default defineConfig({
+  base: BASE_PATH,
+
   resolve: {
     // `import.meta.dirname` rather than `__dirname`: this is an ESM package and
     // Vite+ loads configs through Rolldown, where `__dirname` is not guaranteed.
@@ -41,12 +63,17 @@ export default defineConfig({
         injectRegister: null,
         pwaAssets: { config: true, overrideManifestIcons: true },
         manifest: {
-          id: "/",
+          // These must follow the deploy path. The plugin defaults them to
+          // `base`, but an explicit value here overrides that default, so they
+          // have to be derived rather than written out — a manifest claiming
+          // scope "/" under a subpath makes the installed app try to own the
+          // whole origin and launch at a page that isn't there.
+          id: BASE_PATH,
           name: "Thing Tracker",
           short_name: "Things",
           description: "Local-first tracker for the things you do. Tap an emoji, it's logged.",
-          start_url: "/",
-          scope: "/",
+          start_url: BASE_PATH,
+          scope: BASE_PATH,
           display: "standalone",
           orientation: "portrait",
           background_color: "#09090b",

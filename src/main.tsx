@@ -7,6 +7,9 @@ import "@/styles/index.css";
 
 const router = createRouter({
   routeTree,
+  // Vite's BASE_URL carries a trailing slash; the router wants the prefix
+  // without one, and "" rather than "/" when serving from the root.
+  basepath: import.meta.env.BASE_URL.replace(/\/+$/, ""),
   defaultPreload: "intent",
   // Everything is local; there is no network round trip to stagger a pending
   // state around, so showing one would only add a flicker.
