@@ -1,93 +1,94 @@
 import { useLiveQuery } from "@tanstack/react-db";
 import { createFileRoute } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
 
+import { EventEditorDrawer } from "@/components/event/EventEditorDrawer";
+import { ThingEditorDrawer, type ThingEditorState } from "@/components/thing/ThingEditorDrawer";
+import { TrackScreen } from "@/components/track/TrackScreen";
 import { useCollections } from "@/db/provider";
-import { newEvent, newGroup, newThing } from "@/db/schema";
+import type { Thing } from "@/db/schema";
+import { deleteEvent, updateEvent } from "@/domain/events";
+import { groupsByThing } from "@/domain/grouping";
+import { createThing, deleteThing, updateThing } from "@/domain/things";
 
 export const Route = createFileRoute("/_tabs/")({ component: TrackRoute });
 
-// TEMPORARY: a seed/dump panel to prove the data layer round-trips. Replaced by
-// the real Track screen in the next step.
 function TrackRoute() {
-  const { things, groups, events, usageByThing } = useCollections();
+  const collections = useCollections();
+  const [thingEditor, setThingEditor] = useState<ThingEditorState | null>(null);
+  const [editingEventId, setEditingEventId] = useState<string | null>(null);
 
-  const { data: thingRows } = useLiveQuery((q) => q.from({ thing: things }));
-  const { data: groupRows } = useLiveQuery((q) => q.from({ group: groups }));
-  const { data: eventRows } = useLiveQuery((q) => q.from({ event: events }));
-  const { data: usageRows } = useLiveQuery((q) => q.from({ usage: usageByThing }));
+  const { data: events } = useLiveQuery((q) => q.from({ event: collections.events }));
+  const { data: things } = useLiveQuery((q) => q.from({ thing: collections.things }));
+  const { data: groups } = useLiveQuery((q) => q.from({ group: collections.groups }));
 
-  function seed() {
-    const coffee = newThing({ emoji: "☕", title: "Coffee" });
-    const water = newThing({ emoji: "💧", title: "Water" });
-    const run = newThing({ emoji: "🏃", title: "Run" });
-    things.insert([coffee, water, run]);
+  const editingEvent = useMemo(
+    () => events.find((event) => event.id === editingEventId) ?? null,
+    [events, editingEventId],
+  );
+  const editingThing = useMemo(
+    () => things.find((thing) => thing.id === editingEvent?.thingId),
+    [things, editingEvent],
+  );
 
-    groups.insert([
-      newGroup({ title: "Drinks", sortOrder: 0, thingIds: [coffee.id, water.id] }),
-      newGroup({ title: "Body", sortOrder: 1, thingIds: [run.id, water.id] }),
-    ]);
-
-    const now = Date.now();
-    events.insert([
-      newEvent({ thingId: coffee.id, recordedAt: now - 3_600_000 }),
-      newEvent({ thingId: coffee.id, recordedAt: now - 600_000 }),
-      newEvent({ thingId: water.id, recordedAt: now - 60_000 }),
-    ]);
-  }
+  /**
+   * Emoji already in use by things that share a group with the one being
+   * edited. Only same-group clashes matter — two identical emoji in different
+   * sections are never on screen together.
+   */
+  const siblingEmoji = useMemo(() => {
+    if (thingEditor?.mode !== "edit") return undefined;
+    const target = thingEditor.thing;
+    const byThing = groupsByThing(groups);
+    const sharedGroupIds = new Set((byThing.get(target.id) ?? []).map((g) => g.id));
+    const map = new Map<string, string>();
+    for (const group of groups) {
+      if (!sharedGroupIds.has(group.id)) continue;
+      for (const thingId of group.thingIds) {
+        if (thingId === target.id) continue;
+        const sibling = things.find((t) => t.id === thingId);
+        if (sibling) map.set(sibling.emoji, sibling.title);
+      }
+    }
+    return map;
+  }, [thingEditor, groups, things]);
 
   return (
-    <div className="space-y-4 p-4">
-      <h1 className="text-xl font-semibold tracking-tight">Track</h1>
+    <>
+      <TrackScreen
+        onInspectThing={(thing: Thing) => setThingEditor({ mode: "edit", thing })}
+        onEditEvent={setEditingEventId}
+        onCreateThing={(title) => setThingEditor({ mode: "create", title })}
+      />
 
-      <div className="flex gap-2">
-        <button
-          type="button"
-          className="bg-primary text-primary-foreground h-9 rounded-md px-3 text-sm font-medium"
-          onClick={seed}
-        >
-          Seed
-        </button>
-        <button
-          type="button"
-          className="border-border h-9 rounded-md border px-3 text-sm font-medium"
-          onClick={() => {
-            for (const row of eventRows) events.delete(row.id);
-            for (const row of groupRows) groups.delete(row.id);
-            for (const row of thingRows) things.delete(row.id);
-          }}
-        >
-          Clear
-        </button>
-      </div>
+      <ThingEditorDrawer
+        state={thingEditor}
+        siblingEmoji={siblingEmoji}
+        onClose={() => setThingEditor(null)}
+        onSave={(draft) => {
+          if (thingEditor?.mode === "edit") updateThing(collections, thingEditor.thing.id, draft);
+          else createThing(collections, draft);
+          setThingEditor(null);
+        }}
+        onDelete={(thing) => {
+          deleteThing(collections, thing.id);
+          setThingEditor(null);
+        }}
+      />
 
-      <p className="text-muted-foreground text-sm">
-        {thingRows.length} things · {groupRows.length} groups · {eventRows.length} events
-      </p>
-
-      <ul className="space-y-1 text-sm">
-        {thingRows.map((thing) => {
-          const usage = usageRows.find((u) => u.thingId === thing.id);
-          return (
-            <li key={thing.id} className="flex items-center gap-2">
-              <span className="emoji text-lg">{thing.emoji}</span>
-              <span className="font-medium">{thing.title}</span>
-              <span className="text-muted-foreground">
-                {usage
-                  ? `${usage.total}× · last ${new Date(usage.lastAt).toLocaleTimeString()}`
-                  : "never"}
-              </span>
-            </li>
-          );
-        })}
-      </ul>
-
-      <ul className="text-muted-foreground space-y-1 text-sm">
-        {groupRows.map((group) => (
-          <li key={group.id}>
-            {group.title} → {group.thingIds.length} things
-          </li>
-        ))}
-      </ul>
-    </div>
+      <EventEditorDrawer
+        event={editingEvent}
+        thing={editingThing}
+        onClose={() => setEditingEventId(null)}
+        onSave={(patch) => {
+          if (editingEventId) updateEvent(collections, editingEventId, patch);
+          setEditingEventId(null);
+        }}
+        onDelete={() => {
+          if (editingEventId) deleteEvent(collections, editingEventId);
+          setEditingEventId(null);
+        }}
+      />
+    </>
   );
 }

@@ -50,11 +50,18 @@ export function EmojiPicker({ value, onSelect, className }: Props) {
 
   return (
     <div className={cn("flex min-h-0 flex-col gap-3", className)}>
+      {/*
+        Everything outside the results grid is `shrink-0`: in a height-capped
+        flex column the browser will happily squash the chip row and the recents
+        strip to a few pixels rather than scroll the grid, which is the one part
+        that should absorb the constraint.
+      */}
       <Input
         type="search"
         inputMode="search"
         autoComplete="off"
         placeholder="Search emoji…"
+        className="shrink-0"
         value={query}
         onChange={(event) => {
           setQuery(event.target.value);
@@ -63,7 +70,7 @@ export function EmojiPicker({ value, onSelect, className }: Props) {
       />
 
       {!searching && (
-        <div className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1">
+        <div className="-mx-1 flex shrink-0 gap-1.5 overflow-x-auto px-1 pb-1">
           <CategoryChip active={category === null} onClick={() => setCategory(null)}>
             All
           </CategoryChip>
@@ -76,7 +83,7 @@ export function EmojiPicker({ value, onSelect, className }: Props) {
       )}
 
       {!searching && recents.length > 0 && (
-        <section aria-label="Recently used">
+        <section aria-label="Recently used" className="shrink-0">
           <h3 className="text-muted-foreground mb-1.5 text-xs font-medium">Recent</h3>
           <div className="grid grid-cols-8 gap-1">
             {recents.map((char) => (
@@ -111,7 +118,7 @@ export function EmojiPicker({ value, onSelect, className }: Props) {
         )}
       </div>
 
-      <div className="space-y-1.5">
+      <div className="shrink-0 space-y-1.5">
         <label htmlFor="emoji-custom" className="text-muted-foreground text-xs font-medium">
           Or paste any emoji
         </label>

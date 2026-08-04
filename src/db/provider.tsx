@@ -20,6 +20,12 @@ export function DbProvider({ children }: { children: ReactNode }) {
     [db],
   );
 
+  if (import.meta.env.DEV) {
+    // Reachable from the devtools console as `__tt` — seeding fixtures and
+    // checking what actually landed in the store beats driving the UI to do it.
+    (globalThis as typeof globalThis & { __tt?: DbContextValue }).__tt = value;
+  }
+
   return <DbContext value={value}>{children}</DbContext>;
 }
 
