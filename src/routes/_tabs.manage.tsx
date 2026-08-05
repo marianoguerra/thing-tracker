@@ -15,6 +15,7 @@ import { useImportFlow } from "@/components/manage/useImportFlow";
 import { ThingEditorDrawer, type ThingEditorState } from "@/components/thing/ThingEditorDrawer";
 import { useCollections, useDb } from "@/db/provider";
 import type { Group } from "@/db/schema";
+import { groupsByThing } from "@/domain/grouping";
 import { createGroup, deleteGroup, setGroupMembership, updateGroup } from "@/domain/groups";
 import { createThing, deleteThing, updateThing } from "@/domain/things";
 import { saveOrShare } from "@/lib/file";
@@ -56,6 +57,29 @@ function ManageRoute() {
   const { data: measurements } = useLiveQuery((q) =>
     q.from({ measurement: collections.measurements }),
   );
+  const { data: groups } = useLiveQuery((q) => q.from({ group: collections.groups }));
+
+  /**
+   * Emoji already used by things sharing a group with the one being edited.
+   * Only same-group clashes matter — two identical emoji in different sections
+   * are never on screen together. Moved here with thing editing itself.
+   */
+  const siblingEmoji = useMemo(() => {
+    if (thingEditor?.mode !== "edit") return undefined;
+    const target = thingEditor.thing;
+    const byThing = groupsByThing(groups);
+    const shared = new Set((byThing.get(target.id) ?? []).map((g) => g.id));
+    const map = new Map<string, string>();
+    for (const group of groups) {
+      if (!shared.has(group.id)) continue;
+      for (const thingId of group.thingIds) {
+        if (thingId === target.id) continue;
+        const sibling = things.find((t) => t.id === thingId);
+        if (sibling) map.set(sibling.emoji, sibling.title);
+      }
+    }
+    return map;
+  }, [thingEditor, groups, things]);
 
   const installedBundleIds = useMemo(
     () => new Set(things.map((thing) => thing.bundleId).filter((id): id is string => !!id)),
@@ -128,6 +152,7 @@ function ManageRoute() {
 
       <ThingEditorDrawer
         state={thingEditor}
+        siblingEmoji={siblingEmoji}
         onClose={() => setThingEditor(null)}
         onSave={(draft) => {
           if (thingEditor?.mode === "edit") {

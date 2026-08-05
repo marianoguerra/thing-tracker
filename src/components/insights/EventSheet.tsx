@@ -1,4 +1,4 @@
-import { Trash2Icon } from "lucide-react";
+import { ChevronRightIcon, Trash2Icon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -16,7 +16,10 @@ import { formatTime } from "@/lib/time";
 type Props = {
   open: boolean;
   title: string;
+  /** Undefined for a mixed list, where each row names its own thing instead. */
   thing: Thing | undefined;
+  /** Needed only for the mixed list. */
+  thingById?: Map<string, Thing>;
   events: TrackedEvent[];
   onClose: () => void;
   onEdit: (eventId: string) => void;
@@ -29,12 +32,14 @@ export function EventSheet({
   open,
   title,
   thing,
+  thingById,
   events,
   onClose,
   onEdit,
   onDelete,
   measurementById,
 }: Props) {
+  const mixed = thing === undefined;
   return (
     <Drawer open={open} onOpenChange={(next) => !next && onClose()}>
       <DrawerContent className="max-h-[80vh]">
@@ -45,7 +50,7 @@ export function EventSheet({
                 {thing.emoji}
               </span>
             )}
-            {thing?.title ?? "Entries"}
+            {thing?.title ?? "All entries"}
           </DrawerTitle>
           <DrawerDescription>{title}</DrawerDescription>
         </DrawerHeader>
@@ -58,6 +63,16 @@ export function EventSheet({
                 onClick={() => onEdit(event.id)}
                 className="min-w-0 flex-1 text-left"
               >
+                {/* In a mixed list the row has to say what it is; with a single
+                    thing the header already does. */}
+                {mixed && (
+                  <div className="flex items-center gap-1.5 text-sm font-medium">
+                    <span className="emoji" aria-hidden>
+                      {thingById?.get(event.thingId)?.emoji ?? "❔"}
+                    </span>
+                    {thingById?.get(event.thingId)?.title ?? "Deleted thing"}
+                  </div>
+                )}
                 <div className="text-sm tabular-nums">
                   {new Date(event.actualAt).toLocaleDateString(undefined, {
                     weekday: "short",
@@ -87,6 +102,7 @@ export function EventSheet({
                   </div>
                 )}
               </button>
+              <ChevronRightIcon className="text-muted-foreground/50 size-4 shrink-0" aria-hidden />
               <Button
                 variant="ghost"
                 size="icon-sm"

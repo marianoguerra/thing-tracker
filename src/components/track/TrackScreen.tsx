@@ -27,12 +27,13 @@ const COMPACT_KEY = "tt.track.compact.v1";
 const LONGPRESS_HINT_KEY = "tt.hints.longpress.v1";
 
 type Props = {
-  onInspectThing: (thing: Thing) => void;
+  /** Long-press: draft an entry at a time you choose. */
+  onBackdateThing: (thing: Thing) => void;
   onEditEvent: (eventId: string) => void;
   onCreateThing: (title?: string) => void;
 };
 
-export function TrackScreen({ onInspectThing, onEditEvent, onCreateThing }: Props) {
+export function TrackScreen({ onBackdateThing, onEditEvent, onCreateThing }: Props) {
   const collections = useCollections();
   const { things, groups, usageByThing } = collections;
 
@@ -125,7 +126,8 @@ export function TrackScreen({ onInspectThing, onEditEvent, onCreateThing }: Prop
       setHintShown(true);
       setTimeout(() => {
         toast("Tip", {
-          description: "Press and hold a section header to collapse or expand everything.",
+          description:
+            "Press and hold a thing to log it at a different time, or a section header to collapse everything.",
         });
       }, 1200);
     }
@@ -188,7 +190,7 @@ export function TrackScreen({ onInspectThing, onEditEvent, onCreateThing }: Prop
               }}
               onToggleAll={handleToggleAll}
               onLog={handleTap}
-              onInspect={onInspectThing}
+              onInspect={onBackdateThing}
             />
           ))}
         </div>

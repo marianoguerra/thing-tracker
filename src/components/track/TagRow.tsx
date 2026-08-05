@@ -16,6 +16,7 @@ type Props = {
   onToggle: () => void;
   onToggleAll: () => void;
   onLog: (thing: Thing) => void;
+  /** Long-press a thing: log it at a time you choose. */
   onInspect: (thing: Thing) => void;
 };
 

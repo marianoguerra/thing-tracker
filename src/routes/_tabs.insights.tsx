@@ -3,7 +3,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { z } from "zod";
 
-import { EventEditorDrawer } from "@/components/event/EventEditorDrawer";
+import { EventEditorDrawer, type EventEditorState } from "@/components/event/EventEditorDrawer";
 import { InsightsScreen } from "@/components/insights/InsightsScreen";
 import { useCollections } from "@/db/provider";
 import { GRANULARITIES } from "@/domain/buckets";
@@ -26,7 +26,7 @@ function InsightsRoute() {
   const { by, group } = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
   const collections = useCollections();
-  const [editingEventId, setEditingEventId] = useState<string | null>(null);
+  const [eventEditor, setEventEditor] = useState<EventEditorState | null>(null);
 
   const { data: events } = useLiveQuery((q) => q.from({ event: collections.events }));
   const { data: things } = useLiveQuery((q) => q.from({ thing: collections.things }));
@@ -35,14 +35,15 @@ function InsightsRoute() {
   );
   const measurementById = useMemo(() => indexMeasurements(measurements), [measurements]);
 
-  const editingEvent = useMemo(
-    () => events.find((event) => event.id === editingEventId) ?? null,
-    [events, editingEventId],
-  );
-  const editingThing = useMemo(
-    () => things.find((thing) => thing.id === editingEvent?.thingId),
-    [things, editingEvent],
-  );
+  function openEvent(eventId: string) {
+    const event = events.find((candidate) => candidate.id === eventId);
+    if (!event) return;
+    setEventEditor({
+      mode: "edit",
+      event,
+      thing: things.find((thing) => thing.id === event.thingId),
+    });
+  }
 
   return (
     <>
@@ -58,21 +59,20 @@ function InsightsRoute() {
             replace: true,
           });
         }}
-        onEditEvent={setEditingEventId}
+        onEditEvent={openEvent}
       />
 
       <EventEditorDrawer
-        event={editingEvent}
-        thing={editingThing}
+        state={eventEditor}
         measurementById={measurementById}
-        onClose={() => setEditingEventId(null)}
+        onClose={() => setEventEditor(null)}
         onSave={(patch) => {
-          if (editingEventId) updateEvent(collections, editingEventId, patch);
-          setEditingEventId(null);
+          if (eventEditor) updateEvent(collections, eventEditor.event.id, patch);
+          setEventEditor(null);
         }}
         onDelete={() => {
-          if (editingEventId) deleteEvent(collections, editingEventId);
-          setEditingEventId(null);
+          if (eventEditor) deleteEvent(collections, eventEditor.event.id);
+          setEventEditor(null);
         }}
       />
     </>

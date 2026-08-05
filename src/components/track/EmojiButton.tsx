@@ -24,7 +24,7 @@ export function EmojiButton({ thing, lastAt, total, compact, onLog, onLongPress 
       type="button"
       {...press}
       aria-label={`Log ${thing.title}${total ? `, logged ${total} times, last ${subtitle}` : ", never logged"}`}
-      title={thing.title}
+      title={`${thing.title} — tap to log now, hold to pick a time`}
       className={cn(
         "group border-border/60 bg-card flex flex-col items-center justify-center gap-1 rounded-xl border transition-transform select-none",
         // `manipulation`, never `none`: `touch-action: none` would kill

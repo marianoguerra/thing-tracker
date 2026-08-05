@@ -1,4 +1,5 @@
 import { useLiveQuery } from "@tanstack/react-db";
+import { ListIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { useCollections } from "@/db/provider";
@@ -11,6 +12,9 @@ import { GranularityToggle } from "./GranularityToggle";
 import { EventSheet } from "./EventSheet";
 
 type Selection = { thingId: string | null; bucket: Bucket | null };
+
+/** How many entries the flat list renders before asking you to narrow down. */
+const ALL_LIMIT = 200;
 
 type Props = {
   granularity: Granularity;
@@ -29,6 +33,7 @@ export function InsightsScreen({
 }: Props) {
   const collections = useCollections();
   const [selection, setSelection] = useState<Selection>({ thingId: null, bucket: null });
+  const [showAll, setShowAll] = useState(false);
 
   const { data: events } = useLiveQuery((q) => q.from({ event: collections.events }));
   const { data: things } = useLiveQuery((q) => q.from({ thing: collections.things }));
@@ -74,6 +79,11 @@ export function InsightsScreen({
       .sort((a, b) => b.actualAt - a.actualAt);
   }, [selection, visibleEvents, granularity]);
 
+  const allEntries = useMemo(
+    () => [...visibleEvents].sort((a, b) => b.actualAt - a.actualAt).slice(0, ALL_LIMIT),
+    [visibleEvents],
+  );
+
   const selectedThing: Thing | undefined = selection.thingId
     ? thingById.get(selection.thingId)
     : undefined;
@@ -88,7 +98,22 @@ export function InsightsScreen({
   return (
     <>
       <div className="bg-background/85 border-border sticky top-0 z-20 space-y-2 border-b px-4 pt-[calc(env(safe-area-inset-top,0px)+0.625rem)] pb-2.5 backdrop-blur-lg">
-        <GranularityToggle value={granularity} onChange={onGranularityChange} />
+        <div className="flex items-center gap-2">
+          <div className="flex-1">
+            <GranularityToggle value={granularity} onChange={onGranularityChange} />
+          </div>
+          {/* The plain chronological view. Without it, reaching an entry means
+              guessing which day and which emoji it lives under. */}
+          <button
+            type="button"
+            onClick={() => setShowAll(true)}
+            aria-label="All entries"
+            title="All entries"
+            className="border-border text-muted-foreground flex size-9 shrink-0 items-center justify-center rounded-md border"
+          >
+            <ListIcon className="size-4" />
+          </button>
+        </div>
         {usedGroupIds.size > 0 && (
           <div className="-mx-1 flex gap-1.5 overflow-x-auto px-1">
             <FilterChip active={groupId === null} onClick={() => onGroupChange(null)}>
@@ -142,6 +167,23 @@ export function InsightsScreen({
           )}
         </div>
       )}
+
+      <EventSheet
+        open={showAll}
+        title={`${String(Math.min(visibleEvents.length, ALL_LIMIT))} of ${String(visibleEvents.length)}, newest first`}
+        thing={undefined}
+        thingById={thingById}
+        events={allEntries}
+        measurementById={measurementById}
+        onClose={() => setShowAll(false)}
+        onEdit={(eventId) => {
+          setShowAll(false);
+          onEditEvent(eventId);
+        }}
+        onDelete={(eventId) => {
+          collections.events.delete(eventId);
+        }}
+      />
 
       <EventSheet
         open={selection.thingId !== null}

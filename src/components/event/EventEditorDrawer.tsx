@@ -18,9 +18,17 @@ import { formatMeasurement, preferredUnit } from "@/lib/measure/format";
 import { formatRelative, fromDatetimeLocal, toDatetimeLocal } from "@/lib/time";
 import { cn } from "@/lib/utils";
 
+/**
+ * `create` holds an unsaved draft, so backdating an entry writes nothing until
+ * Save — a long-press that silently logged something would be worse than no
+ * shortcut at all.
+ */
+export type EventEditorState =
+  | { mode: "create"; event: TrackedEvent; thing: Thing | undefined }
+  | { mode: "edit"; event: TrackedEvent; thing: Thing | undefined };
+
 type Props = {
-  event: TrackedEvent | null;
-  thing: Thing | undefined;
+  state: EventEditorState | null;
   onClose: () => void;
   onSave: (patch: { actualAt: number; notes: string; measurements: EventMeasurement[] }) => void;
   onDelete: () => void;
@@ -28,14 +36,10 @@ type Props = {
   measurementById: Map<string, Measurement>;
 };
 
-export function EventEditorDrawer({
-  event,
-  thing,
-  onClose,
-  onSave,
-  onDelete,
-  measurementById,
-}: Props) {
+export function EventEditorDrawer({ state, onClose, onSave, onDelete, measurementById }: Props) {
+  const event = state?.event ?? null;
+  const thing = state?.thing;
+  const creating = state?.mode === "create";
   const [when, setWhen] = useState("");
   const [notes, setNotes] = useState("");
   const [values, setValues] = useState<
@@ -78,7 +82,7 @@ export function EventEditorDrawer({
   const valid = parsed !== null;
 
   return (
-    <Drawer open={event !== null} onOpenChange={(open) => !open && onClose()}>
+    <Drawer open={state !== null} onOpenChange={(open) => !open && onClose()}>
       <DrawerContent>
         <DrawerHeader className="pb-2">
           <DrawerTitle className="flex items-center gap-2">
@@ -90,11 +94,13 @@ export function EventEditorDrawer({
             {thing?.title ?? "Entry"}
           </DrawerTitle>
           <DrawerDescription>
-            {event
-              ? // recordedAt is the immutable audit trail; showing it makes an
-                // edited actualAt legible rather than mysterious.
-                `Recorded ${formatRelative(event.recordedAt)}`
-              : null}
+            {creating
+              ? "Set when this happened."
+              : event
+                ? // recordedAt is the immutable audit trail; showing it makes an
+                  // edited actualAt legible rather than mysterious.
+                  `Recorded ${formatRelative(event.recordedAt)}`
+                : null}
           </DrawerDescription>
         </DrawerHeader>
 
@@ -212,11 +218,17 @@ export function EventEditorDrawer({
               }
             }}
           >
-            Save
+            {creating ? "Log entry" : "Save"}
           </Button>
-          <Button variant="ghost" className="text-destructive" onClick={onDelete}>
-            Delete entry
-          </Button>
+          {creating ? (
+            <Button variant="outline" onClick={onClose}>
+              Cancel
+            </Button>
+          ) : (
+            <Button variant="ghost" className="text-destructive" onClick={onDelete}>
+              Delete entry
+            </Button>
+          )}
         </DrawerFooter>
       </DrawerContent>
     </Drawer>

@@ -2,100 +2,95 @@ import { useLiveQuery } from "@tanstack/react-db";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 
-import { EventEditorDrawer } from "@/components/event/EventEditorDrawer";
+import { EventEditorDrawer, type EventEditorState } from "@/components/event/EventEditorDrawer";
 import { ThingEditorDrawer, type ThingEditorState } from "@/components/thing/ThingEditorDrawer";
 import { TrackScreen } from "@/components/track/TrackScreen";
 import { useCollections } from "@/db/provider";
-import type { Thing } from "@/db/schema";
+import { newEvent, type Thing } from "@/db/schema";
 import { deleteEvent, updateEvent } from "@/domain/events";
-import { groupsByThing } from "@/domain/grouping";
-import { indexMeasurements } from "@/domain/measurements";
-import { createThing, deleteThing, updateThing } from "@/domain/things";
+import { indexMeasurements, measurementHistory } from "@/domain/measurements";
+import { createThing } from "@/domain/things";
 
 export const Route = createFileRoute("/_tabs/")({ component: TrackRoute });
 
 function TrackRoute() {
   const collections = useCollections();
   const [thingEditor, setThingEditor] = useState<ThingEditorState | null>(null);
-  const [editingEventId, setEditingEventId] = useState<string | null>(null);
+  const [eventEditor, setEventEditor] = useState<EventEditorState | null>(null);
 
   const { data: events } = useLiveQuery((q) => q.from({ event: collections.events }));
   const { data: things } = useLiveQuery((q) => q.from({ thing: collections.things }));
-  const { data: groups } = useLiveQuery((q) => q.from({ group: collections.groups }));
   const { data: measurements } = useLiveQuery((q) =>
     q.from({ measurement: collections.measurements }),
   );
   const measurementById = useMemo(() => indexMeasurements(measurements), [measurements]);
 
-  const editingEvent = useMemo(
-    () => events.find((event) => event.id === editingEventId) ?? null,
-    [events, editingEventId],
-  );
-  const editingThing = useMemo(
-    () => things.find((thing) => thing.id === editingEvent?.thingId),
-    [things, editingEvent],
-  );
-
   /**
-   * Emoji already in use by things that share a group with the one being
-   * edited. Only same-group clashes matter — two identical emoji in different
-   * sections are never on screen together.
+   * Opens an unsaved entry for a thing, pre-filled the same way a tap would be
+   * — last time's measurements, time set to now and editable. This is how you
+   * record something you forgot to log at the time.
    */
-  const siblingEmoji = useMemo(() => {
-    if (thingEditor?.mode !== "edit") return undefined;
-    const target = thingEditor.thing;
-    const byThing = groupsByThing(groups);
-    const sharedGroupIds = new Set((byThing.get(target.id) ?? []).map((g) => g.id));
-    const map = new Map<string, string>();
-    for (const group of groups) {
-      if (!sharedGroupIds.has(group.id)) continue;
-      for (const thingId of group.thingIds) {
-        if (thingId === target.id) continue;
-        const sibling = things.find((t) => t.id === thingId);
-        if (sibling) map.set(sibling.emoji, sibling.title);
-      }
-    }
-    return map;
-  }, [thingEditor, groups, things]);
+  function backdate(thing: Thing) {
+    const draft = newEvent({
+      thingId: thing.id,
+      measurements: thing.measurements.flatMap((ref) => {
+        const last = measurementHistory(collections, thing.id, ref.measurementId)[0];
+        return last === undefined ? [] : [{ measurementId: ref.measurementId, value: last }];
+      }),
+    });
+    setEventEditor({ mode: "create", event: draft, thing });
+  }
+
+  function openEvent(eventId: string) {
+    const event = events.find((candidate) => candidate.id === eventId);
+    if (!event) return;
+    setEventEditor({
+      mode: "edit",
+      event,
+      thing: things.find((thing) => thing.id === event.thingId),
+    });
+  }
 
   return (
     <>
       <TrackScreen
-        onInspectThing={(thing: Thing) => setThingEditor({ mode: "edit", thing })}
-        onEditEvent={setEditingEventId}
+        onBackdateThing={backdate}
+        onEditEvent={openEvent}
         onCreateThing={(title) => setThingEditor({ mode: "create", title })}
       />
 
+      {/* Only creation lives here — editing a thing belongs in Manage → Things,
+          which frees long-press on Track for backdating an entry. */}
       <ThingEditorDrawer
         state={thingEditor}
-        siblingEmoji={siblingEmoji}
         onClose={() => setThingEditor(null)}
         onSave={(draft) => {
-          if (thingEditor?.mode === "edit") {
-            updateThing(collections, thingEditor.thing.id, draft);
-          } else {
-            createThing(collections, draft);
-          }
-          setThingEditor(null);
-        }}
-        onDelete={(thing) => {
-          deleteThing(collections, thing.id);
+          createThing(collections, draft);
           setThingEditor(null);
         }}
       />
 
       <EventEditorDrawer
-        event={editingEvent}
-        thing={editingThing}
+        state={eventEditor}
         measurementById={measurementById}
-        onClose={() => setEditingEventId(null)}
+        onClose={() => setEventEditor(null)}
         onSave={(patch) => {
-          if (editingEventId) updateEvent(collections, editingEventId, patch);
-          setEditingEventId(null);
+          if (!eventEditor) return;
+          if (eventEditor.mode === "create") {
+            collections.events.insert({
+              ...eventEditor.event,
+              actualAt: patch.actualAt,
+              measurements: patch.measurements,
+              ...(patch.notes.trim() ? { notes: patch.notes } : {}),
+            });
+          } else {
+            updateEvent(collections, eventEditor.event.id, patch);
+          }
+          setEventEditor(null);
         }}
         onDelete={() => {
-          if (editingEventId) deleteEvent(collections, editingEventId);
-          setEditingEventId(null);
+          if (eventEditor?.mode === "edit") deleteEvent(collections, eventEditor.event.id);
+          setEventEditor(null);
         }}
       />
     </>
