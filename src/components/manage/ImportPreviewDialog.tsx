@@ -47,7 +47,7 @@ export function ImportPreviewDialog({
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>
             {noop
-              ? "You already have everything in this file."
+              ? "You already have every thing in this file."
               : "Here's what will change on this device."}
           </DialogDescription>
         </DialogHeader>
@@ -72,7 +72,13 @@ export function ImportPreviewDialog({
               </p>
             ))}
 
-            {plan.kind === "pack" && !noop && (
+            {/*
+              Shown even when the plan is currently a no-op: for someone who
+              already has every thing in the file, ticking this is the only
+              thing that can turn an updated bundle into an actual change.
+              Hiding it here left no way to pick up a new measurement at all.
+            */}
+            {plan.kind === "pack" && plan.things.unchanged.length > 0 && (
               <div className="flex items-start gap-2">
                 <Checkbox
                   id="overwrite-details"
@@ -81,11 +87,13 @@ export function ImportPreviewDialog({
                 />
                 <div className="grid gap-1">
                   <Label htmlFor="overwrite-details" className="text-sm font-normal">
-                    Update names and emoji of things I already have
+                    Update details of things I already have
                   </Label>
                   <p className="text-muted-foreground text-xs">
-                    Off by default — your own labels win. Ids are never changed either way, so
-                    entries you&apos;ve already recorded stay attached.
+                    Names, emoji and what gets recorded — so ticking this is how an updated bundle
+                    adds a measurement to a thing you already have. Off by default: your own edits
+                    win. Ids never change either way, so entries you&apos;ve already recorded stay
+                    attached.
                   </p>
                 </div>
               </div>

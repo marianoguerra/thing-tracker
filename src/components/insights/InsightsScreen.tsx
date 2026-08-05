@@ -9,12 +9,9 @@ import { groupsByThing } from "@/domain/grouping";
 import { indexMeasurements } from "@/domain/measurements";
 import { BucketRow, formatBucketLabel } from "./BucketRow";
 import { GranularityToggle } from "./GranularityToggle";
-import { EventSheet } from "./EventSheet";
+import { EventSheet, PAGE_SIZE } from "./EventSheet";
 
 type Selection = { thingId: string | null; bucket: Bucket | null };
-
-/** How many entries the flat list renders before asking you to narrow down. */
-const ALL_LIMIT = 200;
 
 type Props = {
   granularity: Granularity;
@@ -34,6 +31,9 @@ export function InsightsScreen({
   const collections = useCollections();
   const [selection, setSelection] = useState<Selection>({ thingId: null, bucket: null });
   const [showAll, setShowAll] = useState(false);
+  // Paged rather than capped: a year of daily tracking is thousands of entries,
+  // and a hard limit would simply hide the older half with no way to reach it.
+  const [shownCount, setShownCount] = useState(PAGE_SIZE);
 
   const { data: events } = useLiveQuery((q) => q.from({ event: collections.events }));
   const { data: things } = useLiveQuery((q) => q.from({ thing: collections.things }));
@@ -79,10 +79,11 @@ export function InsightsScreen({
       .sort((a, b) => b.actualAt - a.actualAt);
   }, [selection, visibleEvents, granularity]);
 
-  const allEntries = useMemo(
-    () => [...visibleEvents].sort((a, b) => b.actualAt - a.actualAt).slice(0, ALL_LIMIT),
+  const allSorted = useMemo(
+    () => [...visibleEvents].sort((a, b) => b.actualAt - a.actualAt),
     [visibleEvents],
   );
+  const allEntries = useMemo(() => allSorted.slice(0, shownCount), [allSorted, shownCount]);
 
   const selectedThing: Thing | undefined = selection.thingId
     ? thingById.get(selection.thingId)
@@ -106,7 +107,10 @@ export function InsightsScreen({
               guessing which day and which emoji it lives under. */}
           <button
             type="button"
-            onClick={() => setShowAll(true)}
+            onClick={() => {
+              setShownCount(PAGE_SIZE);
+              setShowAll(true);
+            }}
             aria-label="All entries"
             title="All entries"
             className="border-border text-muted-foreground flex size-9 shrink-0 items-center justify-center rounded-md border"
@@ -170,11 +174,13 @@ export function InsightsScreen({
 
       <EventSheet
         open={showAll}
-        title={`${String(Math.min(visibleEvents.length, ALL_LIMIT))} of ${String(visibleEvents.length)}, newest first`}
+        title={`${String(allEntries.length)} of ${String(allSorted.length)}, newest first`}
         thing={undefined}
         thingById={thingById}
         events={allEntries}
         measurementById={measurementById}
+        remaining={allSorted.length - allEntries.length}
+        onShowMore={() => setShownCount((n) => n + PAGE_SIZE)}
         onClose={() => setShowAll(false)}
         onEdit={(eventId) => {
           setShowAll(false);

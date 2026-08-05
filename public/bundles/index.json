@@ -24,7 +24,7 @@
     "title": "Hydration & caffeine",
     "description": "What you drink through the day, from water to the evening wine.",
     "emoji": "💧",
-    "version": 2,
+    "version": 3,
     "file": "hydration.json",
     "thingCount": 7,
     "groupCount": 1

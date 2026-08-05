@@ -1,15 +1,26 @@
 import type { AppCollectionsCtx } from "@/db/collections";
 import type { AppDatabase } from "@/db/database";
+import { EventSchema, GroupSchema, MeasurementSchema, ThingSchema } from "@/db/schema";
 import { setGroupMembership } from "@/domain/groups";
 import type { BackupEnvelope } from "./envelope";
 import type { ImportPlan, LocalSnapshot } from "./plan";
 
+/**
+ * A clean view of local state for the planner.
+ *
+ * Parsed through the schemas rather than passed straight from `toArray`, which
+ * hands back records carrying TanStack DB's `$key` / `$synced` / `$origin` /
+ * `$collectionId`. The planner spreads local records into the ones it plans to
+ * write, so that metadata would ride along and then be assigned back onto a
+ * draft — which silently drops the write, leaving an "updated" record
+ * unchanged. Same leak as the one that used to reach exported files.
+ */
 export function snapshot(collections: AppCollectionsCtx): LocalSnapshot {
   return {
-    things: [...collections.things.toArray],
-    groups: [...collections.groups.toArray],
-    events: [...collections.events.toArray],
-    measurements: [...collections.measurements.toArray],
+    things: collections.things.toArray.map((row) => ThingSchema.parse(row)),
+    groups: collections.groups.toArray.map((row) => GroupSchema.parse(row)),
+    events: collections.events.toArray.map((row) => EventSchema.parse(row)),
+    measurements: collections.measurements.toArray.map((row) => MeasurementSchema.parse(row)),
   };
 }
 

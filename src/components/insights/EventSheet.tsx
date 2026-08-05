@@ -13,6 +13,9 @@ import type { Measurement, Thing, TrackedEvent } from "@/db/schema";
 import { formatMeasurement } from "@/lib/measure/format";
 import { formatTime } from "@/lib/time";
 
+/** How many more entries each "Show more" reveals. */
+export const PAGE_SIZE = 200;
+
 type Props = {
   open: boolean;
   title: string;
@@ -25,6 +28,9 @@ type Props = {
   onEdit: (eventId: string) => void;
   onDelete: (eventId: string) => void;
   measurementById: Map<string, Measurement>;
+  /** Entries not yet rendered. Omit for a list that is always complete. */
+  remaining?: number;
+  onShowMore?: () => void;
 };
 
 /** The plain chronological list, reached by drilling into an emoji chip. */
@@ -38,6 +44,8 @@ export function EventSheet({
   onEdit,
   onDelete,
   measurementById,
+  remaining = 0,
+  onShowMore,
 }: Props) {
   const mixed = thing === undefined;
   return (
@@ -116,6 +124,13 @@ export function EventSheet({
           ))}
           {events.length === 0 && (
             <li className="text-muted-foreground py-6 text-center text-sm">No entries.</li>
+          )}
+          {remaining > 0 && onShowMore && (
+            <li className="py-3">
+              <Button variant="outline" className="w-full" onClick={onShowMore}>
+                Show {Math.min(remaining, PAGE_SIZE)} more ({remaining} left)
+              </Button>
+            </li>
           )}
         </ul>
 

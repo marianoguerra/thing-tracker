@@ -7,7 +7,7 @@
     "title": "Hydration & caffeine",
     "description": "What you drink through the day, from water to the evening wine.",
     "emoji": "💧",
-    "version": 2
+    "version": 3
   },
   "groups": [
     {
@@ -70,7 +70,12 @@
       "emoji": "🧉",
       "title": "Mate",
       "archived": false,
-      "measurements": [],
+      "measurements": [
+        {
+          "measurementId": "c0ee2368-6ea4-5233-8e13-63dec48435b1",
+          "unit": "l"
+        }
+      ],
       "bundleId": "hydration",
       "createdAt": 0,
       "updatedAt": 0

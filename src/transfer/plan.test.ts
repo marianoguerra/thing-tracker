@@ -93,6 +93,25 @@ describe("planPackImport", () => {
     expect(plan.groups.create[0]?.thingIds).toEqual([water.id]);
   });
 
+  it("carries an updated measurement onto a thing already held", () => {
+    // The upgrade path for a bundle that gains a measurement: without the tick
+    // nothing changes, with it the new config actually lands. This regressed
+    // once because local records reached the planner still carrying TanStack
+    // DB metadata, which then silently voided the write.
+    const measured = thing("t-water", "Water", {
+      measurements: [{ measurementId: "m-vol", unit: "l" }],
+    });
+    const local: LocalSnapshot = { ...EMPTY, things: [thing("t-water", "Water")] };
+    const incoming = pack([], [measured]);
+
+    expect(planPackImport(incoming, local).things.update).toHaveLength(0);
+
+    const forced = planPackImport(incoming, local, { overwriteThingDetails: true });
+    expect(forced.things.update[0]?.measurements).toEqual([{ measurementId: "m-vol", unit: "l" }]);
+    // Nothing outside the schema may ride along into what gets written.
+    expect(Object.keys(forced.things.update[0] ?? {}).filter((k) => k.startsWith("$"))).toEqual([]);
+  });
+
   it("assigns new groups a sort order after the existing ones", () => {
     const local: LocalSnapshot = { ...EMPTY, groups: [group("g-a", "A", [], { sortOrder: 4 })] };
     const plan = planPackImport(sample, local);

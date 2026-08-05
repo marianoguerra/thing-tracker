@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useState } from "react";
 
 import type { BundleIndexEntry } from "@/bundles/build";
 import { Button } from "@/components/ui/button";
+import { matchesQuery } from "@/lib/text";
 import { fetchBundleIndex, fetchBundlePack } from "@/transfer/bundles";
+import { ManageSearch, NoMatches } from "./ManageSearch";
 
 type Props = {
   installedBundleIds: Set<string>;
@@ -12,6 +14,16 @@ type Props = {
 export function BundleBrowser({ installedBundleIds, onLoad }: Props) {
   const [entries, setEntries] = useState<BundleIndexEntry[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const deferredQuery = useDeferredValue(query);
+
+  const visible = useMemo(
+    () =>
+      (entries ?? []).filter((entry) =>
+        matchesQuery(deferredQuery, entry.title, entry.description, entry.emoji),
+      ),
+    [entries, deferredQuery],
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -41,8 +53,14 @@ export function BundleBrowser({ installedBundleIds, onLoad }: Props) {
         so data recorded against it can be compared later.
       </p>
 
+      {entries.length > 0 && (
+        <ManageSearch value={query} onChange={setQuery} placeholder="Search bundles…" />
+      )}
+
+      {visible.length === 0 && deferredQuery.trim() && <NoMatches query={deferredQuery} />}
+
       <ul className="space-y-2">
-        {entries.map((entry) => {
+        {visible.map((entry) => {
           const installed = installedBundleIds.has(entry.id);
           return (
             <li

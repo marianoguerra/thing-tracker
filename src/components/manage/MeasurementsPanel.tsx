@@ -1,7 +1,9 @@
 import { useLiveQuery } from "@tanstack/react-db";
-import { useMemo } from "react";
+import { useDeferredValue, useMemo, useState } from "react";
 
 import { useCollections } from "@/db/provider";
+import { matchesQuery } from "@/lib/text";
+import { ManageSearch, NoMatches } from "./ManageSearch";
 
 /**
  * The measurement registry.
@@ -26,7 +28,25 @@ export function MeasurementsPanel() {
     return counts;
   }, [thingRows]);
 
-  const sorted = useMemo(() => [...rows].sort((a, b) => a.name.localeCompare(b.name)), [rows]);
+  const [query, setQuery] = useState("");
+  const deferredQuery = useDeferredValue(query);
+
+  const sorted = useMemo(
+    () =>
+      [...rows]
+        // Unit labels and symbols are searchable too: looking for "lb" or
+        // "miles" should find the scale that carries them.
+        .filter((m) =>
+          matchesQuery(
+            deferredQuery,
+            m.name,
+            m.emoji,
+            m.units.map((u) => `${u.label} ${u.symbol}`).join(" "),
+          ),
+        )
+        .sort((a, b) => a.name.localeCompare(b.name)),
+    [rows, deferredQuery],
+  );
 
   return (
     <div className="space-y-3 p-4">
@@ -34,6 +54,12 @@ export function MeasurementsPanel() {
         Quantities a thing can record. Metric and imperial units sit inside the same measurement, so
         values are stored once and everyone reads them in whichever unit they think in.
       </p>
+
+      {rows.length > 0 && (
+        <ManageSearch value={query} onChange={setQuery} placeholder="Search measurements…" />
+      )}
+
+      {sorted.length === 0 && deferredQuery.trim() && <NoMatches query={deferredQuery} />}
 
       <ul className="divide-border/60 divide-y">
         {sorted.map((measurement) => {

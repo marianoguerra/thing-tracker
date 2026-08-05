@@ -125,9 +125,10 @@ const hydration: BundleDef = {
   title: "Hydration & caffeine",
   emoji: "💧",
   description: "What you drink through the day, from water to the evening wine.",
-  // v2 added mate. Existing slugs keep their ids, so anyone who already loaded
-  // v1 picks up the new thing without their recorded data moving.
-  version: 2,
+  // v2 added mate; v3 gave it a volume in litres — a thermos is measured in
+  // litres where a glass of water is in millilitres, which is exactly why the
+  // unit belongs to the thing rather than to the measurement.
+  version: 3,
   groups: [
     {
       slug: "drinks",
@@ -137,7 +138,7 @@ const hydration: BundleDef = {
         { slug: "water", emoji: "💧", title: "Water", measures: [{ slug: "volume", unit: "ml" }] },
         { slug: "coffee", emoji: "☕", title: "Coffee" },
         { slug: "tea", emoji: "🍵", title: "Tea" },
-        { slug: "mate", emoji: "🧉", title: "Mate" },
+        { slug: "mate", emoji: "🧉", title: "Mate", measures: [{ slug: "volume", unit: "l" }] },
         { slug: "soft-drink", emoji: "🥤", title: "Soft drink" },
         { slug: "beer", emoji: "🍺", title: "Beer" },
         { slug: "wine", emoji: "🍷", title: "Wine" },
