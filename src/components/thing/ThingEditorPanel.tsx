@@ -1,4 +1,4 @@
-import { ArrowLeftIcon } from "lucide-react";
+import { ArrowLeftIcon, Trash2Icon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { EmojiPicker } from "@/components/emoji/EmojiPicker";
@@ -68,17 +68,10 @@ export function ThingEditorPanel({ state, onClose, onSave, onDelete, siblingEmoj
   const editing = state?.mode === "edit" ? state.thing : null;
   const canSave = title.trim().length > 0 && emoji.length > 0;
 
-  /**
-   * Creating steps through the fields; editing shows them all at once.
-   *
-   * A wizard suits the case where every field is unanswered and the order
-   * matters. Editing is almost always one change, and making someone page past
-   * two screens to reach it would be pure friction.
-   */
+  /** One field group per screen, creating or editing alike. */
   const STEPS = ["Name & emoji", "What to record", "Notes"] as const;
-  const stepped = editing === null;
   const last = step === STEPS.length - 1;
-  const show = (index: number) => !stepped || step === index;
+  const show = (index: number) => step === index;
   const canAdvance = step === 0 ? canSave : true;
 
   function commit() {
@@ -94,17 +87,13 @@ export function ThingEditorPanel({ state, onClose, onSave, onDelete, siblingEmoj
     <FullScreenPanel
       open={state !== null}
       title={editing ? "Edit thing" : "New thing"}
-      description={
-        stepped ? STEPS[step] : "The emoji is how you'll recognise it when tapping fast."
-      }
+      description={STEPS[step]}
       headerExtra={
-        stepped ? (
-          <span className="text-muted-foreground shrink-0 text-xs tabular-nums">
-            {step + 1} of {STEPS.length}
-          </span>
-        ) : undefined
+        <span className="text-muted-foreground shrink-0 text-xs tabular-nums">
+          {step + 1} of {STEPS.length}
+        </span>
       }
-      progress={stepped ? (step + 1) / STEPS.length : undefined}
+      progress={(step + 1) / STEPS.length}
       confirmClose={{
         title: editing ? "Discard changes?" : "Discard this thing?",
         description: "Nothing has been saved yet.",
@@ -112,16 +101,23 @@ export function ThingEditorPanel({ state, onClose, onSave, onDelete, siblingEmoj
       onClose={onClose}
       footer={
         <>
+          {/*
+            Icon-only, and on every step rather than just the last: deleting is
+            a single-purpose act, so it should not require paging to the end —
+            but three full-width buttons do not fit a 320px footer.
+          */}
           {editing && onDelete && (
             <Button
               variant="outline"
-              className="text-destructive h-12 shrink-0"
+              size="icon"
+              aria-label={`Delete ${editing.title}`}
+              className="text-destructive size-12 shrink-0"
               onClick={() => onDelete(editing)}
             >
-              Delete
+              <Trash2Icon />
             </Button>
           )}
-          {stepped && step > 0 && (
+          {step > 0 && (
             <Button
               variant="outline"
               className="h-12 shrink-0"
@@ -132,13 +128,13 @@ export function ThingEditorPanel({ state, onClose, onSave, onDelete, siblingEmoj
           )}
           <Button
             className="h-12 flex-1 text-base"
-            disabled={stepped ? !canAdvance : !canSave}
+            disabled={!canAdvance}
             onClick={() => {
-              if (!stepped || last) commit();
+              if (last) commit();
               else setStep((n) => n + 1);
             }}
           >
-            {!stepped ? "Save" : last ? "Create" : "Next"}
+            {last ? (editing ? "Save" : "Create") : "Next"}
           </Button>
         </>
       }
