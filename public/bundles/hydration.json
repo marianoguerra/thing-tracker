@@ -7,7 +7,7 @@
     "title": "Hydration & caffeine",
     "description": "What you drink through the day, from water to the evening wine.",
     "emoji": "💧",
-    "version": 1
+    "version": 2
   },
   "groups": [
     {
@@ -19,6 +19,7 @@
         "9bf1a863-8c54-5a3b-9ba7-84a3ef19b36c",
         "af90c308-a608-5701-9155-2f40c71d1e55",
         "4c5099d6-68f4-5221-a6d4-8eac3ad54bff",
+        "e29e00f3-324f-567f-9e73-e6bed4206dff",
         "abc84766-4d7d-5231-9e0c-08fee3c38f65",
         "ddaa88a1-3b71-53a0-8033-a16931a003c3",
         "ca6ff773-d5a5-585c-b454-6002cb034106"
@@ -58,6 +59,16 @@
       "id": "4c5099d6-68f4-5221-a6d4-8eac3ad54bff",
       "emoji": "🍵",
       "title": "Tea",
+      "archived": false,
+      "measurements": [],
+      "bundleId": "hydration",
+      "createdAt": 0,
+      "updatedAt": 0
+    },
+    {
+      "id": "e29e00f3-324f-567f-9e73-e6bed4206dff",
+      "emoji": "🧉",
+      "title": "Mate",
       "archived": false,
       "measurements": [],
       "bundleId": "hydration",

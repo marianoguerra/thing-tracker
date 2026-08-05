@@ -125,7 +125,9 @@ const hydration: BundleDef = {
   title: "Hydration & caffeine",
   emoji: "💧",
   description: "What you drink through the day, from water to the evening wine.",
-  version: 1,
+  // v2 added mate. Existing slugs keep their ids, so anyone who already loaded
+  // v1 picks up the new thing without their recorded data moving.
+  version: 2,
   groups: [
     {
       slug: "drinks",
@@ -135,6 +137,7 @@ const hydration: BundleDef = {
         { slug: "water", emoji: "💧", title: "Water", measures: [{ slug: "volume", unit: "ml" }] },
         { slug: "coffee", emoji: "☕", title: "Coffee" },
         { slug: "tea", emoji: "🍵", title: "Tea" },
+        { slug: "mate", emoji: "🧉", title: "Mate" },
         { slug: "soft-drink", emoji: "🥤", title: "Soft drink" },
         { slug: "beer", emoji: "🍺", title: "Beer" },
         { slug: "wine", emoji: "🍷", title: "Wine" },

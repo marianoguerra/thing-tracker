@@ -77,6 +77,7 @@ exports[`shipped identifiers > has not changed 1`] = `
   "thing home/Watered plants = 53493697-be72-5199-bfd0-7801ea865059",
   "thing hydration/Beer = ddaa88a1-3b71-53a0-8033-a16931a003c3",
   "thing hydration/Coffee = af90c308-a608-5701-9155-2f40c71d1e55",
+  "thing hydration/Mate = e29e00f3-324f-567f-9e73-e6bed4206dff",
   "thing hydration/Soft drink = abc84766-4d7d-5231-9e0c-08fee3c38f65",
   "thing hydration/Tea = 4c5099d6-68f4-5221-a6d4-8eac3ad54bff",
   "thing hydration/Water = 9bf1a863-8c54-5a3b-9ba7-84a3ef19b36c",
