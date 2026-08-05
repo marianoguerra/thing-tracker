@@ -3,7 +3,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { z } from "zod";
 
-import { EventEditorDrawer, type EventEditorState } from "@/components/event/EventEditorDrawer";
+import { EventEditorPanel, type EventEditorState } from "@/components/event/EventEditorPanel";
 import { InsightsScreen } from "@/components/insights/InsightsScreen";
 import { useCollections } from "@/db/provider";
 import { GRANULARITIES } from "@/domain/buckets";
@@ -62,7 +62,7 @@ function InsightsRoute() {
         onEditEvent={openEvent}
       />
 
-      <EventEditorDrawer
+      <EventEditorPanel
         state={eventEditor}
         measurementById={measurementById}
         onClose={() => setEventEditor(null)}

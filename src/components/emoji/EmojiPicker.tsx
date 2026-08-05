@@ -2,7 +2,12 @@ import { useDeferredValue, useMemo, useState } from "react";
 
 import { Input } from "@/components/ui/input";
 import { useLocalStorageState } from "@/hooks/useLocalStorageState";
-import { CATALOG_CATEGORIES, COMMON_CATEGORY, entriesForCategory } from "@/lib/emoji/catalog";
+import {
+  CATALOG_CATEGORIES,
+  CATEGORY_ICONS,
+  COMMON_CATEGORY,
+  entriesForCategory,
+} from "@/lib/emoji/catalog";
 import { searchEmoji } from "@/lib/emoji/search";
 import { cn } from "@/lib/utils";
 
@@ -73,11 +78,18 @@ export function EmojiPicker({ value, onSelect, className }: Props) {
         aria-label="Search emoji"
       />
 
+      {/* Wraps rather than scrolls: every category stays reachable at any
+          width, with no hidden overflow to discover. */}
       {!searching && (
-        <div className="-mx-1 flex shrink-0 gap-1.5 overflow-x-auto px-1 pb-1">
+        <div className="flex shrink-0 flex-wrap justify-center gap-1">
           {CATALOG_CATEGORIES.map((cat) => (
-            <CategoryChip key={cat} active={category === cat} onClick={() => setCategory(cat)}>
-              {cat}
+            <CategoryChip
+              key={cat}
+              label={cat}
+              active={category === cat}
+              onClick={() => setCategory(cat)}
+            >
+              {CATEGORY_ICONS[cat] ?? "•"}
             </CategoryChip>
           ))}
         </div>
@@ -149,10 +161,12 @@ export function EmojiPicker({ value, onSelect, className }: Props) {
 
 function CategoryChip({
   active,
+  label,
   onClick,
   children,
 }: {
   active: boolean;
+  label: string;
   onClick: () => void;
   children: React.ReactNode;
 }) {
@@ -161,11 +175,11 @@ function CategoryChip({
       type="button"
       onClick={onClick}
       aria-pressed={active}
+      aria-label={label}
+      title={label}
       className={cn(
-        "shrink-0 rounded-full border px-3 py-1 text-xs font-medium whitespace-nowrap transition-colors",
-        active
-          ? "bg-primary text-primary-foreground border-transparent"
-          : "border-border text-muted-foreground",
+        "emoji flex size-9 shrink-0 items-center justify-center rounded-lg text-lg transition-colors",
+        active ? "bg-primary/20 ring-primary ring-2" : "hover:bg-accent",
       )}
     >
       {children}

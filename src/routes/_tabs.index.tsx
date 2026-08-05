@@ -2,8 +2,8 @@ import { useLiveQuery } from "@tanstack/react-db";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 
-import { EventEditorDrawer, type EventEditorState } from "@/components/event/EventEditorDrawer";
-import { ThingEditorDrawer, type ThingEditorState } from "@/components/thing/ThingEditorDrawer";
+import { EventEditorPanel, type EventEditorState } from "@/components/event/EventEditorPanel";
+import { ThingEditorPanel, type ThingEditorState } from "@/components/thing/ThingEditorPanel";
 import { TrackScreen } from "@/components/track/TrackScreen";
 import { useCollections } from "@/db/provider";
 import { newEvent, type Thing } from "@/db/schema";
@@ -61,7 +61,7 @@ function TrackRoute() {
 
       {/* Only creation lives here — editing a thing belongs in Manage → Things,
           which frees long-press on Track for backdating an entry. */}
-      <ThingEditorDrawer
+      <ThingEditorPanel
         state={thingEditor}
         onClose={() => setThingEditor(null)}
         onSave={(draft) => {
@@ -70,7 +70,7 @@ function TrackRoute() {
         }}
       />
 
-      <EventEditorDrawer
+      <EventEditorPanel
         state={eventEditor}
         measurementById={measurementById}
         onClose={() => setEventEditor(null)}

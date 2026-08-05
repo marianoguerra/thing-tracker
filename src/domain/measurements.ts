@@ -1,6 +1,6 @@
 import type { AppCollectionsCtx } from "@/db/collections";
 import type { Measurement, Thing } from "@/db/schema";
-import type { MeasurementPrompt } from "@/components/measure/MeasurementSheet";
+import type { MeasurementPrompt } from "@/components/measure/MeasurementWizard";
 
 export function indexMeasurements(rows: readonly Measurement[]): Map<string, Measurement> {
   return new Map(rows.map((row) => [row.id, row]));

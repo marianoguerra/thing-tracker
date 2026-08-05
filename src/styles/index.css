@@ -107,6 +107,16 @@
     height: 100%;
   }
 
+  /* For strips we page with buttons: the bar is noise and, on a chip row only
+     a few pixels tall, an awkward drag target. Swiping still works. */
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
   /* Emoji should render at their native size and never inherit italic/weight
      transforms from surrounding text styles. */
   .emoji {

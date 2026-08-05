@@ -8,8 +8,9 @@ import { bucketEvents, withGaps, type Bucket, type Granularity } from "@/domain/
 import { groupsByThing } from "@/domain/grouping";
 import { indexMeasurements } from "@/domain/measurements";
 import { BucketRow, formatBucketLabel } from "./BucketRow";
+import { FilterStrip } from "./FilterStrip";
 import { GranularityToggle } from "./GranularityToggle";
-import { EventSheet, PAGE_SIZE } from "./EventSheet";
+import { EventListPanel, PAGE_SIZE } from "./EventListPanel";
 
 type Selection = { thingId: string | null; bucket: Bucket | null };
 
@@ -119,7 +120,7 @@ export function InsightsScreen({
           </button>
         </div>
         {usedGroupIds.size > 0 && (
-          <div className="-mx-1 flex gap-1.5 overflow-x-auto px-1">
+          <FilterStrip>
             <FilterChip active={groupId === null} onClick={() => onGroupChange(null)}>
               All
             </FilterChip>
@@ -135,7 +136,7 @@ export function InsightsScreen({
                   {group.title}
                 </FilterChip>
               ))}
-          </div>
+          </FilterStrip>
         )}
       </div>
 
@@ -172,7 +173,7 @@ export function InsightsScreen({
         </div>
       )}
 
-      <EventSheet
+      <EventListPanel
         open={showAll}
         title={`${String(allEntries.length)} of ${String(allSorted.length)}, newest first`}
         thing={undefined}
@@ -191,7 +192,7 @@ export function InsightsScreen({
         }}
       />
 
-      <EventSheet
+      <EventListPanel
         open={selection.thingId !== null}
         title={selection.bucket ? formatBucketLabel(selection.bucket.start, granularity, now) : ""}
         thing={selectedThing}

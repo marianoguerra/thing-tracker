@@ -6,13 +6,13 @@ import { z } from "zod";
 
 import { BundleBrowser } from "@/components/manage/BundleBrowser";
 import { DataPanel } from "@/components/manage/DataPanel";
-import { GroupEditorDrawer, type GroupEditorState } from "@/components/manage/GroupEditorDrawer";
+import { GroupEditorPanel, type GroupEditorState } from "@/components/manage/GroupEditorPanel";
 import { GroupsPanel } from "@/components/manage/GroupsPanel";
 import { ImportPreviewDialog } from "@/components/manage/ImportPreviewDialog";
 import { MeasurementsPanel } from "@/components/manage/MeasurementsPanel";
 import { ThingsPanel } from "@/components/manage/ThingsPanel";
 import { useImportFlow } from "@/components/manage/useImportFlow";
-import { ThingEditorDrawer, type ThingEditorState } from "@/components/thing/ThingEditorDrawer";
+import { ThingEditorPanel, type ThingEditorState } from "@/components/thing/ThingEditorPanel";
 import { useCollections, useDb } from "@/db/provider";
 import type { Group } from "@/db/schema";
 import { groupsByThing } from "@/domain/grouping";
@@ -150,7 +150,7 @@ function ManageRoute() {
 
       {tab === "data" && <DataPanel onImportText={importFlow.beginFromText} />}
 
-      <ThingEditorDrawer
+      <ThingEditorPanel
         state={thingEditor}
         siblingEmoji={siblingEmoji}
         onClose={() => setThingEditor(null)}
@@ -168,7 +168,7 @@ function ManageRoute() {
         }}
       />
 
-      <GroupEditorDrawer
+      <GroupEditorPanel
         state={groupEditor}
         onClose={() => setGroupEditor(null)}
         onSave={(draft) => {

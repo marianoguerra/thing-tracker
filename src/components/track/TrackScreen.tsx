@@ -3,7 +3,7 @@ import { eq } from "@tanstack/db";
 import { useDeferredValue, useMemo, useState } from "react";
 import { toast } from "sonner";
 
-import { MeasurementSheet, type MeasurementPrompt } from "@/components/measure/MeasurementSheet";
+import { MeasurementWizard, type MeasurementPrompt } from "@/components/measure/MeasurementWizard";
 import { BackupReminder } from "@/components/pwa/BackupReminder";
 import { InstallHint } from "@/components/pwa/InstallHint";
 import { StorageBanner } from "@/components/pwa/StorageBanner";
@@ -196,7 +196,7 @@ export function TrackScreen({ onBackdateThing, onEditEvent, onCreateThing }: Pro
         </div>
       )}
 
-      <MeasurementSheet
+      <MeasurementWizard
         thing={measuring}
         prompts={prompts}
         onCancel={() => setMeasuring(null)}

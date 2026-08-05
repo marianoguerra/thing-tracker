@@ -18,6 +18,27 @@ export const COMMON_CATEGORY = "Common";
 /** "Common" first, then Unicode's groups in their canonical order. */
 export const CATALOG_CATEGORIES: string[] = [COMMON_CATEGORY, ...FULL_GROUPS];
 
+/**
+ * An icon per category, the way every mobile keyboard labels these.
+ *
+ * Ten text labels cannot fit any phone width — they forced a horizontal
+ * scroller that hid half the categories behind a drag. Ten emoji fit, and the
+ * pictures are the same ones people already recognise from their keyboard. The
+ * full name still goes on `aria-label` and `title`.
+ */
+export const CATEGORY_ICONS: Record<string, string> = {
+  [COMMON_CATEGORY]: "⭐",
+  "Smileys & Emotion": "😀",
+  "People & Body": "👋",
+  "Animals & Nature": "🐻",
+  "Food & Drink": "🍔",
+  "Travel & Places": "🚗",
+  Activities: "⚽",
+  Objects: "💡",
+  Symbols: "🔣",
+  Flags: "🏁",
+};
+
 const curatedByChar = new Map(EMOJI_PALETTE.map((entry) => [entry.char, entry]));
 
 /**
