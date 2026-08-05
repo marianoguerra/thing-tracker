@@ -1,3 +1,4 @@
+import { ArrowLeftIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { EmojiPicker } from "@/components/emoji/EmojiPicker";
@@ -41,6 +42,7 @@ export function ThingEditorPanel({ state, onClose, onSave, onDelete, siblingEmoj
   const [description, setDescription] = useState("");
   const [pickerOpen, setPickerOpen] = useState(false);
   const [measurements, setMeasurements] = useState<ThingMeasurementDraft[]>([]);
+  const [step, setStep] = useState(0);
 
   const { measurements: measurementCollection } = useCollections();
   const { data: available } = useLiveQuery((q) => q.from({ measurement: measurementCollection }));
@@ -59,17 +61,50 @@ export function ThingEditorPanel({ state, onClose, onSave, onDelete, siblingEmoj
       setMeasurements([]);
     }
     setPickerOpen(state.mode === "create");
+    setStep(0);
   }, [state]);
 
   const clashesWith = siblingEmoji?.get(emoji);
   const editing = state?.mode === "edit" ? state.thing : null;
   const canSave = title.trim().length > 0 && emoji.length > 0;
 
+  /**
+   * Creating steps through the fields; editing shows them all at once.
+   *
+   * A wizard suits the case where every field is unanswered and the order
+   * matters. Editing is almost always one change, and making someone page past
+   * two screens to reach it would be pure friction.
+   */
+  const STEPS = ["Name & emoji", "What to record", "Notes"] as const;
+  const stepped = editing === null;
+  const last = step === STEPS.length - 1;
+  const show = (index: number) => !stepped || step === index;
+  const canAdvance = step === 0 ? canSave : true;
+
+  function commit() {
+    onSave({
+      emoji,
+      title: title.trim(),
+      description: description.trim() || undefined,
+      measurements,
+    });
+  }
+
   return (
     <FullScreenPanel
       open={state !== null}
       title={editing ? "Edit thing" : "New thing"}
-      description="The emoji is how you'll recognise it when tapping fast."
+      description={
+        stepped ? STEPS[step] : "The emoji is how you'll recognise it when tapping fast."
+      }
+      headerExtra={
+        stepped ? (
+          <span className="text-muted-foreground shrink-0 text-xs tabular-nums">
+            {step + 1} of {STEPS.length}
+          </span>
+        ) : undefined
+      }
+      progress={stepped ? (step + 1) / STEPS.length : undefined}
       confirmClose={{
         title: editing ? "Discard changes?" : "Discard this thing?",
         description: "Nothing has been saved yet.",
@@ -86,98 +121,111 @@ export function ThingEditorPanel({ state, onClose, onSave, onDelete, siblingEmoj
               Delete
             </Button>
           )}
+          {stepped && step > 0 && (
+            <Button
+              variant="outline"
+              className="h-12 shrink-0"
+              onClick={() => setStep((n) => n - 1)}
+            >
+              <ArrowLeftIcon /> Back
+            </Button>
+          )}
           <Button
             className="h-12 flex-1 text-base"
-            disabled={!canSave}
+            disabled={stepped ? !canAdvance : !canSave}
             onClick={() => {
-              onSave({
-                emoji,
-                title: title.trim(),
-                description: description.trim() || undefined,
-                measurements,
-              });
+              if (!stepped || last) commit();
+              else setStep((n) => n + 1);
             }}
           >
-            {editing ? "Save" : "Create"}
+            {!stepped ? "Save" : last ? "Create" : "Next"}
           </Button>
         </>
       }
     >
       <div className="space-y-4">
-        {/*
+        {show(0) && (
+          <>
+            {/*
             `items-start` with matching control heights, not `items-end`:
             aligning the bottoms of two columns whose controls differ in height
             leaves the labels sitting at different heights.
           */}
-        <div className="flex items-start gap-3">
+            <div className="flex items-start gap-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="thing-emoji">Emoji</Label>
+                <button
+                  id="thing-emoji"
+                  type="button"
+                  onClick={() => setPickerOpen((open) => !open)}
+                  aria-expanded={pickerOpen}
+                  className="emoji border-border flex size-14 items-center justify-center rounded-xl border text-3xl"
+                >
+                  {emoji}
+                </button>
+              </div>
+              <div className="flex-1 space-y-1.5">
+                <Label htmlFor="thing-title">Name</Label>
+                <Input
+                  id="thing-title"
+                  value={title}
+                  onChange={(event) => setTitle(event.target.value)}
+                  placeholder="Coffee"
+                  autoComplete="off"
+                  enterKeyHint="done"
+                  className="h-14 text-base"
+                />
+              </div>
+            </div>
+
+            {clashesWith && (
+              <p className="text-muted-foreground text-xs">
+                <span className="emoji">{emoji}</span> is already used by{" "}
+                <strong className="font-medium">{clashesWith}</strong> in one of the same groups —
+                still fine, just harder to tell apart at a glance.
+              </p>
+            )}
+
+            {pickerOpen && (
+              <EmojiPicker
+                value={emoji}
+                onSelect={(next) => {
+                  setEmoji(next);
+                  setPickerOpen(false);
+                }}
+                className="max-h-[45vh]"
+              />
+            )}
+          </>
+        )}
+
+        {show(1) && (
           <div className="space-y-1.5">
-            <Label htmlFor="thing-emoji">Emoji</Label>
-            <button
-              id="thing-emoji"
-              type="button"
-              onClick={() => setPickerOpen((open) => !open)}
-              aria-expanded={pickerOpen}
-              className="emoji border-border flex size-14 items-center justify-center rounded-xl border text-3xl"
-            >
-              {emoji}
-            </button>
-          </div>
-          <div className="flex-1 space-y-1.5">
-            <Label htmlFor="thing-title">Name</Label>
-            <Input
-              id="thing-title"
-              value={title}
-              onChange={(event) => setTitle(event.target.value)}
-              placeholder="Coffee"
-              autoComplete="off"
-              enterKeyHint="done"
-              className="h-14 text-base"
+            <Label>Record a value when logging</Label>
+            <p className="text-muted-foreground text-xs">
+              Leave all unticked and one tap logs it outright. Tick any and tapping asks for them
+              first, pre-filled with last time&apos;s.
+            </p>
+            <MeasurementPicker
+              measurements={available}
+              value={measurements}
+              onChange={setMeasurements}
             />
           </div>
-        </div>
-
-        {clashesWith && (
-          <p className="text-muted-foreground text-xs">
-            <span className="emoji">{emoji}</span> is already used by{" "}
-            <strong className="font-medium">{clashesWith}</strong> in one of the same groups — still
-            fine, just harder to tell apart at a glance.
-          </p>
         )}
 
-        {pickerOpen && (
-          <EmojiPicker
-            value={emoji}
-            onSelect={(next) => {
-              setEmoji(next);
-              setPickerOpen(false);
-            }}
-            className="max-h-[45vh]"
-          />
+        {show(2) && (
+          <div className="space-y-1.5">
+            <Label htmlFor="thing-description">Notes (optional)</Label>
+            <Textarea
+              id="thing-description"
+              value={description}
+              onChange={(event) => setDescription(event.target.value)}
+              placeholder="What counts as one of these?"
+              rows={3}
+            />
+          </div>
         )}
-
-        <div className="space-y-1.5">
-          <Label>Record a value when logging</Label>
-          <p className="text-muted-foreground text-xs">
-            Leave all unticked and one tap logs it outright. Tick any and tapping asks for them
-            first, pre-filled with last time&apos;s.
-          </p>
-          <MeasurementPicker
-            measurements={available}
-            value={measurements}
-            onChange={setMeasurements}
-          />
-        </div>
-
-        <div className="space-y-1.5">
-          <Label htmlFor="thing-description">Notes (optional)</Label>
-          <Textarea
-            id="thing-description"
-            value={description}
-            onChange={(event) => setDescription(event.target.value)}
-            placeholder="What counts as one of these?"
-            rows={2}
-          />
-        </div>
       </div>
     </FullScreenPanel>
   );
