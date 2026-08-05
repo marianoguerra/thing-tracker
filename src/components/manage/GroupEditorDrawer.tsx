@@ -1,5 +1,5 @@
 import { useLiveQuery } from "@tanstack/react-db";
-import { useEffect, useMemo, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useState } from "react";
 
 import { EmojiPicker } from "@/components/emoji/EmojiPicker";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCollections } from "@/db/provider";
 import type { Group } from "@/db/schema";
+import { filterThings } from "@/domain/search";
+import { ManageSearch, NoMatches } from "./ManageSearch";
 
 export type GroupEditorState = { mode: "create" } | { mode: "edit"; group: Group };
 
@@ -34,6 +36,8 @@ export function GroupEditorDrawer({ state, onClose, onSave, onDelete }: Props) {
   const [emoji, setEmoji] = useState<string>("");
   const [members, setMembers] = useState<Set<string>>(new Set());
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [thingQuery, setThingQuery] = useState("");
+  const deferredThingQuery = useDeferredValue(thingQuery);
 
   useEffect(() => {
     if (!state) return;
@@ -47,12 +51,16 @@ export function GroupEditorDrawer({ state, onClose, onSave, onDelete }: Props) {
       setMembers(new Set());
     }
     setPickerOpen(false);
+    setThingQuery("");
   }, [state]);
 
-  const sorted = useMemo(
-    () => [...thingRows].sort((a, b) => a.title.localeCompare(b.title)),
-    [thingRows],
-  );
+  const sorted = useMemo(() => {
+    // Alphabetical when not searching, and deliberately not selected-first:
+    // reordering on tick would move the next checkbox out from under the
+    // finger that just tapped one.
+    if (deferredThingQuery.trim()) return filterThings(thingRows, deferredThingQuery);
+    return [...thingRows].sort((a, b) => a.title.localeCompare(b.title));
+  }, [thingRows, deferredThingQuery]);
 
   const editing = state?.mode === "edit" ? state.group : null;
 
@@ -103,7 +111,23 @@ export function GroupEditorDrawer({ state, onClose, onSave, onDelete }: Props) {
           )}
 
           <div className="space-y-1.5">
-            <Label>Things</Label>
+            <div className="flex items-baseline justify-between">
+              <Label>Things</Label>
+              {/* Filtering hides ticked rows, so the count is what stops you
+                  losing track of what the tag actually holds. */}
+              <span className="text-muted-foreground text-xs tabular-nums">
+                {members.size} selected
+              </span>
+            </div>
+
+            {thingRows.length > 0 && (
+              <ManageSearch
+                value={thingQuery}
+                onChange={setThingQuery}
+                placeholder="Search things…"
+              />
+            )}
+
             <ul className="divide-border/60 divide-y">
               {sorted.map((thing) => (
                 <li key={thing.id} className="flex items-center gap-3 py-2">
@@ -131,7 +155,13 @@ export function GroupEditorDrawer({ state, onClose, onSave, onDelete }: Props) {
                 </li>
               ))}
               {sorted.length === 0 && (
-                <li className="text-muted-foreground py-4 text-sm">No things to add yet.</li>
+                <li>
+                  {deferredThingQuery.trim() ? (
+                    <NoMatches query={deferredThingQuery} />
+                  ) : (
+                    <p className="text-muted-foreground py-4 text-sm">No things to add yet.</p>
+                  )}
+                </li>
               )}
             </ul>
           </div>
